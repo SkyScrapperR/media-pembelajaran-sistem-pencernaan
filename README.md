@@ -12,4 +12,16 @@ Dibuat untuk mata kuliah Teknologi Baru dalam Pengajaran dan Pembelajaran.
 ## Menjalankan
 
 Cukup buka `index.html` di peramban modern (Chrome, Edge, Safari, Firefox) dengan koneksi internet.
-Suara narasi paling alami tersedia di Microsoft Edge (suara Gadis atau Ardi, Natural).
+Narasi memakai rekaman MP3 di folder `audio/` bila tersedia, sehingga suaranya sama di semua peramban.
+Bila rekaman tidak ada, media memakai suara bahasa Indonesia bawaan peramban.
+
+## Membuat rekaman narasi
+
+Teks narasi ada di `narasi.json`. Rekaman dibuat dengan [edge-tts](https://github.com/rany2/edge-tts):
+
+```
+pip install edge-tts
+python tools/gen_audio.py narasi.json audio
+```
+
+Suara dapat diganti lewat variabel `NARASI_VOICE` (bawaan `id-ID-GadisNeural`).
