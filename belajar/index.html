@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Belajar · Jelajah Pencernaan</title>
+<meta name="description" content="Model 3D sistem pencernaan manusia interaktif untuk IPAS kelas 5 SD.">
+<meta name="theme-color" content="#1f333b">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Lexend:wght@400;600&display=swap">
+<link rel="stylesheet" href="gaya.css">
+</head>
+<body>
+<div id="app">
+  <div class="bg" aria-hidden="true"><div class="lines"></div><div class="spot"></div><div class="vig"></div></div>
+  <canvas id="gl" tabindex="0" aria-label="Model 3D sistem pencernaan. Geser untuk memutar, cubit atau gulir untuk memperbesar, panah keyboard untuk memutar."></canvas>
+  <div id="labels" aria-hidden="true"></div>
+  <div class="ui">
+    <div class="top">
+      <div class="row">
+        <div class="brand"><button type="button" class="logo" id="homeBtn" aria-label="Kembali ke menu awal" title="Menu awal"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M9 3c0 2 1 3 1 5s-3 2-3 5 3 4 6 4 4 1 4 3" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="15.5" cy="9" r="3" fill="#fff"/></svg></button><h1>Jelajah Pencernaan<span class="sub">IPAS Kelas 5 SD</span></h1></div>
+        <div class="right">
+          <div class="tabs" role="group" aria-label="Pilih kegiatan">
+            <button class="tab" id="tabIntro" type="button" aria-pressed="true"><span class="long">Organ apa ini?</span><span class="short">Tebak</span></button>
+            <button class="tab" id="tabExplore" type="button" aria-pressed="false"><span class="long">Jelajah Tubuh</span><span class="short">Jelajah</span></button>
+            <button class="tab" id="tabJourney" type="button" aria-pressed="false"><span class="long">Perjalanan Nasi</span><span class="short">Perjalanan</span></button>
+          </div>
+          <button class="round" id="infoBtn" type="button" aria-label="Tujuan, petunjuk, dan sumber" title="Tujuan, petunjuk, dan sumber">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"/></svg>
+          </button>
+          <button class="round" id="sndBtn" type="button" aria-pressed="true" aria-label="Musik dan suara" title="Musik dan suara">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><g class="wave" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 8.5a5 5 0 010 7"/><path d="M18.8 6a9 9 0 010 12"/></g><g class="xmark" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16.5 9.5l5 5"/><path d="M21.5 9.5l-5 5"/></g></svg>
+          </button>
+          <button class="round" id="voiceBtn" type="button" aria-expanded="false" aria-controls="voicePanel" aria-label="Pengaturan suara narasi" title="Suara narasi">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M16.5 6.5a4 4 0 010 5"/><path d="M19 4a7.5 7.5 0 010 10"/></svg>
+          </button>
+          <button class="round" id="fsBtn" type="button" aria-pressed="false" aria-label="Layar penuh" title="Layar penuh">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><g class="enter" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5"/><path d="M20 9V4h-5"/><path d="M4 15v5h5"/><path d="M20 15v5h-5"/></g><g class="leave" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4"/><path d="M15 4v5h5"/><path d="M9 20v-5H4"/><path d="M15 20v-5h5"/></g></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="introTop">
+        <p class="q">Organ <em>apa</em> ini?</p>
+        <p class="score" id="score" hidden></p>
+      </div>
+
+      <div id="exploreTop" hidden>
+        <div class="tools">
+          <button class="btn" id="bodyBtn" type="button" aria-pressed="true">Tubuh</button>
+          <button class="btn" id="boneBtn" type="button" aria-pressed="true">Tulang</button>
+          <button class="btn" id="labelBtn" type="button" aria-pressed="true">Nama</button>
+          <button class="btn" id="resetBtn" type="button">Tampilan awal</button>
+        </div>
+        <p class="note" id="hint">Geser untuk memutar. Cubit atau gulir untuk zoom. Ketuk organ atau pilih namanya di bawah.</p>
+        <p class="note">Bentuk, ukuran, dan letak organ disederhanakan.</p>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <div id="introUI">
+        <p class="cluehint" id="clue" hidden></p>
+        <div class="opts" id="opts" role="group" aria-label="Pilihan jawaban"></div>
+        <div class="acts" id="introActs">
+          <button class="btn" id="clueBtn" type="button">Minta petunjuk</button>
+        </div>
+        <div class="card" id="answer" hidden aria-live="polite">
+          <span class="verdict" id="verdict"></span>
+          <h2 id="aName"></h2>
+          <p id="aDesc"></p>
+          <div class="acts">
+            <button class="btn primary" id="toBody" type="button">Lihat letaknya di tubuh</button>
+            <button class="btn" id="again" type="button">Tebak organ lain</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="chips" id="chips" role="group" aria-label="Pilih organ" hidden></div>
+
+      <div id="journeyUI" hidden>
+        <div class="card" id="jCard" aria-live="polite">
+          <div class="meta">
+            <span class="badge" id="jNo"></span>
+            <span class="time" id="jTime"></span>
+          </div>
+          <h2 id="jName"></h2>
+          <p id="jText"></p>
+          <p class="think" id="jThink"></p>
+          <div class="acts">
+            <button class="btn" id="jPrev" type="button">Sebelumnya</button>
+            <button class="btn primary" id="jNext" type="button">Mulai</button>
+            <button class="btn speak" id="jSpeak" type="button" aria-pressed="false">Dengarkan</button>
+            <button class="btn pos" id="jPos" type="button" hidden>Pos Pemeriksaan</button>
+          </div>
+        </div>
+        <div class="steps" id="steps" role="group" aria-label="Tahap perjalanan"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="fx" aria-hidden="true"></div>
+  <div class="home" id="home">
+    <div class="homeCard">
+      <span class="logo big" aria-hidden="true"><svg viewBox="0 0 24 24" width="34" height="34"><path d="M9 3c0 2 1 3 1 5s-3 2-3 5 3 4 6 4 4 1 4 3" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="15.5" cy="9" r="3" fill="#fff"/></svg></span>
+      <p class="kicker">IPAS Kelas 5 SD · Fase C</p>
+      <h2>Jelajah Pencernaan</h2>
+      <p class="lead">Lihat ke dalam tubuh manusia dan ikuti perjalanan sesuap nasi dari mulut sampai keluar lagi.</p>
+      <div class="modes" id="modes">
+        <button type="button" data-m="intro" disabled><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 9a3 3 0 1 1 4 2.8c-.7.3-1 .9-1 1.6V14"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg></span><span class="mt"><b>Organ apa ini?</b><span>Tebak organ dari bentuknya</span></span></button>
+        <button type="button" data-m="explore" disabled><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg></span><span class="mt"><b>Jelajah Tubuh</b><span>Ketuk organ untuk mengenal fungsinya</span></span></button>
+        <button type="button" data-m="journey" disabled><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16c0 4.4-3.6 7-8 7s-8-2.6-8-7z"/><path d="M7 12c.5-2 2-2 3-1 .7-1.7 2.8-1.7 3.6 0 .8-1.3 2.6-1.1 3.4 1"/></svg></span><span class="mt"><b>Perjalanan Nasi</b><span>Ikuti makanan melewati 6 tahap</span></span></button>
+      </div>
+      <div class="hlinks">
+        <button type="button" data-tab="tujuan">Tujuan Pembelajaran</button>
+        <button type="button" data-tab="petunjuk">Petunjuk</button>
+        <button type="button" data-tab="sumber">Sumber</button>
+      </div>
+      <div class="hlinks site">
+        <a href="../">Beranda</a>
+        <a href="../asesmen/">Asesmen</a>
+      </div>
+      <p class="hnote" id="homeNote">Menyiapkan model 3D…</p>
+    </div>
+  </div>
+  <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheetBox">
+      <div class="sheetHead">
+        <h2 id="sheetTitle">Tentang Media</h2>
+        <button class="round" id="sheetClose" type="button" aria-label="Tutup"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="stabs" role="tablist">
+        <button class="stab" type="button" role="tab" data-tab="tujuan">Tujuan</button>
+        <button class="stab" type="button" role="tab" data-tab="petunjuk">Petunjuk</button>
+        <button class="stab" type="button" role="tab" data-tab="sumber">Sumber</button>
+      </div>
+
+      <section class="spane" data-pane="tujuan">
+        <p class="smeta">IPAS · Kelas 5 SD (Fase C) · Sistem Pencernaan Manusia</p>
+        <p>Setelah menggunakan media ini, peserta didik dapat:</p>
+        <ol class="tp">
+          <li><b>Menyebutkan</b> organ-organ pencernaan manusia beserta letaknya di dalam tubuh dengan tepat.</li>
+          <li><b>Menjelaskan</b> fungsi setiap organ pencernaan, termasuk organ tambahan (hati, kantong empedu, dan pankreas).</li>
+          <li><b>Mengurutkan</b> perjalanan makanan dari mulut sampai anus dan menjelaskan proses yang terjadi di setiap organ.</li>
+          <li><b>Membedakan</b> pencernaan mekanik dan pencernaan kimiawi beserta contohnya.</li>
+          <li><b>Menjelaskan</b> cara menjaga kesehatan organ pencernaan dalam kebiasaan sehari-hari.</li>
+        </ol>
+        <p class="smeta">Kegiatan di media yang mendukung tujuan: Organ apa ini? (tujuan 1), Jelajah Tubuh (tujuan 1, 2, 4, 5), Perjalanan Nasi (tujuan 3, 4, 5). Pemahaman diuji di Pos Pemeriksaan dan halaman Asesmen.</p>
+      </section>
+
+      <section class="spane" data-pane="petunjuk" hidden>
+        <ol class="steps2">
+          <li><b>Pilih kegiatan</b> di menu awal atau di tab bagian atas. Ketuk logo di kiri atas untuk kembali ke menu awal.</li>
+          <li><b>Organ apa ini?</b> Amati organ yang berputar, lalu pilih satu dari tiga jawaban. Tekan <i>Minta petunjuk</i> bila ragu. Setelah menjawab, tekan <i>Lihat letaknya di tubuh</i>.</li>
+          <li><b>Jelajah Tubuh.</b> Geser layar untuk memutar, cubit atau gulir untuk memperbesar. Ketuk organ atau pilih namanya di bagian bawah untuk membaca fungsinya. Tombol <i>Tubuh</i>, <i>Tulang</i>, dan <i>Nama</i> menyembunyikan atau menampilkan bagian tersebut.</li>
+          <li><b>Perjalanan Nasi.</b> Tekan <i>Mulai</i>, lalu dengarkan dan amati setiap tahap. Tombol <i>Lanjut</i> aktif setelah animasi dan narasi tahap itu selesai. Diskusikan pertanyaan <i>Pikirkan</i>, lalu coba <i>Pos Pemeriksaan</i> untuk menguji pemahamanmu sebelum lanjut.</li>
+          <li><b>Suara.</b> Tombol speaker menyalakan musik dan efek. Tombol ikon orang berbicara membuka pengaturan narasi. Narasi memakai rekaman suara, jadi terdengar sama di semua peramban.</li>
+        </ol>
+      </section>
+
+      <section class="spane" data-pane="sumber" hidden>
+        <h3>Sumber materi</h3>
+        <ul class="src">
+          <li>Ghaniem, A. F., Rasa, A. A., Oktora, A. H., &amp; Yasella, M. (2021). <i>Ilmu Pengetahuan Alam dan Sosial untuk SD Kelas V</i>. Jakarta: Pusat Perbukuan, BSKAP, Kemendikbudristek. Bab 5: Bagaimana Kita Hidup dan Bertumbuh.</li>
+        </ul>
+        <h3>Aset dan teknologi</h3>
+        <ul class="src">
+          <li><b>Model 3D tubuh dan organ:</b> dibuat sendiri dengan kode, tanpa model dari pihak lain.</li>
+          <li><b>Mesin 3D:</b> three.js r128 (lisensi MIT), threejs.org.</li>
+          <li><b>Huruf:</b> Fredoka dan Lexend dari Google Fonts (SIL Open Font License).</li>
+          <li><b>Musik dan efek bunyi:</b> dibuat sendiri dengan Web Audio API.</li>
+          <li><b>Narasi:</b> suara sintesis bawaan perangkat melalui Web Speech API.</li>
+          <li><b>Ikon:</b> digambar sendiri (SVG).</li>
+        </ul>
+        <h3>Pengembang</h3>
+        <ul class="src">
+          <li>Dikembangkan oleh Bagus untuk mata kuliah Teknologi Baru dalam Pengajaran dan Pembelajaran.</li>
+          <li>Proses pengembangan dibantu asisten AI Claude (Anthropic).</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+  <div class="vpanel" id="voicePanel" hidden>
+    <h3>Suara narasi</h3>
+    <div id="vHas" class="vcol">
+      <label class="vrow"><input type="checkbox" id="vAuto"> Bacakan otomatis saat organ atau tahap dipilih</label>
+      <label class="vlab" for="vSel">Pilih suara</label>
+      <select id="vSel"></select>
+      <label class="vlab" for="vRate">Kecepatan bicara</label>
+      <select id="vRate"><option value="0.88">Pelan</option><option value="1">Normal</option><option value="1.1">Agak cepat</option></select>
+      <button class="btn primary" id="vTest" type="button">Coba suara</button>
+      <p class="vtip" id="vNatural">Untuk suara yang paling mirip manusia, buka media ini di Microsoft Edge lalu pilih suara Gadis atau Ardi (Natural).</p>
+    </div>
+    <p class="vtip" id="vNone">Perangkat ini belum punya suara bahasa Indonesia. Buka media ini di Microsoft Edge atau Google Chrome versi terbaru.</p>
+  </div>
+  <aside id="info" hidden aria-live="polite">
+    <h2 id="iName"></h2>
+    <p class="aka" id="iAka" hidden></p>
+    <div class="badges"><span class="badge" id="iBadge"></span><span class="badge soft" id="iJenis"></span></div>
+    <ul class="facts" id="iFacts"></ul>
+    <p class="wow" id="iWow"></p>
+    <p class="think" id="iThink"></p>
+    <div class="acts">
+      <button class="btn speak" id="iSpeak" type="button" aria-pressed="false">Dengarkan</button>
+      <button class="btn" id="iClose" type="button">Tutup</button>
+    </div>
+  </aside>
+  <div id="posWrap" hidden><div class="posBox"><button class="round" id="posClose" type="button" aria-label="Tutup pos pemeriksaan"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button><iframe id="posFrame" title="Pos Pemeriksaan" src="about:blank"></iframe></div></div>
+  <div id="nogl" hidden><p>Perangkat ini belum bisa menampilkan 3D. Coba buka di peramban lain, misalnya Chrome versi terbaru.</p></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="data.js"></script>
+<script src="tubuh.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

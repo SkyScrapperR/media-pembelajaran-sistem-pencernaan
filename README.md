@@ -1,22 +1,43 @@
 # Jelajah Pencernaan
 
-Media pembelajaran digital interaktif 3D tentang sistem pencernaan manusia untuk IPAS kelas V SD (Fase C).
-Dibuat untuk mata kuliah Teknologi Baru dalam Pengajaran dan Pembelajaran.
+Media pembelajaran digital interaktif dan aplikasi asesmen digital tentang sistem pencernaan manusia
+untuk IPAS kelas V SD (Fase C). Dibuat untuk mata kuliah Teknologi Baru dalam Pengajaran dan Pembelajaran.
 
-## Kegiatan
+## Isi situs
 
-- **Organ apa ini?** Tebak organ dari model 3D yang berputar, lengkap dengan petunjuk, skor, dan umpan balik.
-- **Jelajah Tubuh.** Putar dan perbesar tubuh tembus pandang, lalu ketuk organ untuk membaca fungsinya.
-- **Perjalanan Nasi.** Ikuti sesuap nasi melewati 6 tahap dengan animasi dan narasi suara.
+| Halaman | Isi |
+|---|---|
+| `/` | Beranda dan alur penjelajahan |
+| `/belajar/` | Media 3D: Organ apa ini?, Jelajah Tubuh, Perjalanan Nasi dengan narasi suara |
+| `/asesmen/` | Pusat asesmen dan kemajuan pemain |
+| `/asesmen/cek-bekal.html` | Asesmen diagnostik: 6 soal dengan tingkat keyakinan |
+| `/asesmen/pos.html?pos=1..6` | Asesmen formatif: 6 permainan dengan umpan balik langsung |
+| `/asesmen/ujian.html` | Asesmen sumatif: 15 soal, nilai 0 sampai 100, pembahasan, sertifikat |
+| `/asesmen/guru.html` | Kisi-kisi, kunci jawaban, pedoman penskoran, rekap hasil |
+
+## Susunan file
+
+- `assets/` dipakai bersama: `tema.css` (tampilan), `inti.js` (penyimpan progres, bunyi), `soal.js` (bank soal), `peta.js` (gambar tubuh 2D).
+- `belajar/` berisi media 3D yang dipecah menjadi `gaya.css`, `data.js` (materi dan narasi), `tubuh.js` (model tubuh), dan `app.js`.
+- `asesmen/` berisi satu file JavaScript untuk setiap halaman.
+
+Setiap halaman hanya memuat file yang dibutuhkannya. Mesin 3D (three.js) hanya dimuat di `/belajar/`.
+Pos Pemeriksaan juga dapat dibuka dari dalam Perjalanan Nasi dan baru dimuat saat tombolnya ditekan.
 
 ## Menjalankan
 
-Cukup buka `index.html` di peramban modern (Chrome, Edge, Safari, Firefox) dengan koneksi internet.
+Situs ini HTML, CSS, dan JavaScript biasa tanpa proses build. Jalankan server statis di folder ini, misalnya:
+
+```
+python -m http.server 8000
+```
+
+lalu buka `http://localhost:8000`. Hasil asesmen tersimpan di peramban perangkat (localStorage).
+
+## Rekaman narasi
+
 Narasi memakai rekaman MP3 di folder `audio/` bila tersedia, sehingga suaranya sama di semua peramban.
 Bila rekaman tidak ada, media memakai suara bahasa Indonesia bawaan peramban.
-
-## Membuat rekaman narasi
-
 Teks narasi ada di `narasi.json`. Rekaman dibuat dengan [edge-tts](https://github.com/rany2/edge-tts):
 
 ```
