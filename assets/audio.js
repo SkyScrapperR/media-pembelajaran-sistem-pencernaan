@@ -10,9 +10,9 @@
     try {
       var C = window.AudioContext || window.webkitAudioContext; if (!C) { return null; }
       ctx = new C();
-      var komp = ctx.createDynamicsCompressor(); komp.threshold.value = -14; komp.ratio.value = 4; komp.connect(ctx.destination);
+      var komp = ctx.createDynamicsCompressor(); komp.threshold.value = -10; komp.ratio.value = 3; komp.knee.value = 12; komp.connect(ctx.destination);
       sfxOut = ctx.createGain(); sfxOut.gain.value = data.volume; sfxOut.connect(komp);
-      musLp = ctx.createBiquadFilter(); musLp.type = 'lowpass'; musLp.frequency.value = 3200; musLp.connect(komp);
+      musLp = ctx.createBiquadFilter(); musLp.type = 'lowpass'; musLp.frequency.value = 6000; musLp.connect(komp);
       musOut = ctx.createGain(); musOut.gain.value = 0.0001; musOut.connect(musLp);
       var n = ctx.sampleRate, b = ctx.createBuffer(1, n, n), d = b.getChannelData(0);
       for (var i = 0; i < n; i++) { d[i] = Math.random() * 2 - 1; }
@@ -84,6 +84,20 @@
       akor: [A(27, [63, 67, 70, 75]), A(24, [60, 63, 67, 72]), A(32, [60, 63, 68, 72]), A(34, [62, 65, 70, 74])],
       arp: [0, 2, 1, 3, 2, 0, 3, 1], arpAlat: 'bell', arpG: 0.06, arpOkt: 12, bass: 'r...f...', bassAlat: 'sin', bassG: 0.14, pad: 0.04,
       kilau: { p: 0.35, langkah: [1, 3, 5, 7], skala: [75, 77, 79, 82, 84, 87], alat: 'bell' } },
+    { id: 'pantai', nama: 'Pantai Tropis', ket: 'Santai dengan bunyi kalimba', bpm: 100,
+      akor: [A(31, [62, 67, 71, 74]), A(28, [64, 67, 71, 76]), A(24, [64, 67, 72, 76]), A(26, [62, 66, 69, 74])],
+      lead: [79, 0, 76, 0, 74, 76, 0, 0, 76, 0, 74, 0, 71, 0, 0, 0, 72, 0, 74, 76, 0, 74, 72, 0, 74, 0, 0, 0, 0, 0, 0, 0], leadAlat: 'bell', leadG: 0.08, leadTiap: 2,
+      arp: [0, 2, 1, 3, null, 2, 1, 0], arpAlat: 'bell', arpG: 0.05, arpOkt: 12, skank: '..x...x.', bass: 'r..r.f..', bassAlat: 'tri', bassG: 0.15,
+      drum: { k: 'x.....x.', s: '....x...', h: '.x.x.x.x' }, drumG: 0.8 },
+    { id: 'jalan', nama: 'Jalan-jalan Santai', ket: 'Jazz ringan untuk bersantai', bpm: 104,
+      akor: [A(26, [60, 62, 65, 69]), A(31, [59, 62, 65, 67]), A(24, [59, 60, 64, 67]), A(33, [61, 64, 67, 69])],
+      bassPola: [0, null, 7, null, 12, null, 7, null], bassAlat: 'tri', bassG: 0.15, komp: '.x...x..',
+      kilau: { p: 0.45, langkah: [1, 3, 6], skala: [69, 72, 74, 75, 76, 79], alat: 'ep' }, drum: { k: 'x.......', s: '......x.', h: 'x.xxx.xx' }, drumG: 0.6 },
+    { id: 'robot', nama: 'Robot 8-bit', ket: 'Seperti game jadul, cepat dan seru', bpm: 140,
+      akor: [A(33, [57, 60, 64, 69]), A(29, [57, 60, 65, 69]), A(36, [60, 64, 67, 72]), A(31, [59, 62, 67, 71])],
+      lead: [76, 0, 76, 79, 0, 76, 74, 72, 72, 0, 0, 74, 76, 0, 72, 0, 74, 0, 74, 76, 0, 74, 72, 71, 71, 0, 0, 0, 67, 0, 71, 0], leadAlat: 'sq', leadG: 0.04, leadTiap: 1,
+      arp: [0, 1, 2, 3, 2, 1, 0, 1], arpAlat: 'sq', arpG: 0.02, arpOkt: 12, bass: 'r.r.r.r.', bassAlat: 'sq', bassG: 0.045,
+      drum: { k: 'x...x...', s: '..x...x.', h: 'x.x.x.x.' }, drumG: 0.9 },
     { id: 'juara', nama: 'Pesta Juara', ket: 'Meriah untuk merayakan kemenangan', bpm: 132,
       akor: [A(31, [62, 67, 71, 74]), A(26, [62, 66, 69, 74]), A(28, [64, 67, 71, 76]), A(24, [64, 67, 72, 76])],
       lead: [74, 0, 74, 76, 79, 0, 76, 74, 74, 0, 72, 74, 78, 0, 0, 0, 76, 0, 74, 76, 79, 0, 83, 81, 79, 0, 76, 74, 72, 0, 74, 0], leadAlat: 'tri', leadG: 0.1, leadTiap: 1,
@@ -91,19 +105,21 @@
       drum: { k: 'x...x.x.', s: '..x...x.', h: 'xxxxxxxx' }, drumG: 1.1 }
   ];
   var LAGU_ID = {}; LAGU.forEach(function (l) { LAGU_ID[l.id] = l; });
+  var KERAS = 1.6; /* penguat semua alat musik */
   function alat(nama, m, t, d, g) {
-    var f = hz(m);
-    if (nama === 'sin') { osc(musOut, f, t, d, g, 'sine'); }
+    var f = hz(m); g = g * KERAS;
+    if (nama === 'sin') { osc(musOut, f, t, d, g, 'sine'); osc(musOut, f * 2, t, d * 0.8, g * 0.35, 'triangle'); }
     else if (nama === 'sq') { osc(musOut, f, t, d, g, 'square'); }
     else if (nama === 'bell') { osc(musOut, f, t, d * 2.2, g, 'sine'); osc(musOut, f * 2.01, t, d * 1.1, g * 0.35, 'sine'); }
     else if (nama === 'ep') { osc(musOut, f, t, d * 2.4, g, 'sine', null, 0.008); osc(musOut, f * 2.003, t, d * 0.9, g * 0.3, 'sine'); osc(musOut, f * 0.998, t, d * 2.4, g * 0.4, 'triangle'); }
     else { osc(musOut, f, t, d, g, 'triangle'); }
   }
-  function kick(t, g) { osc(musOut, 150, t, 0.28, 0.42 * g, 'sine', 45); }
-  function snare(t, g) { semprot(musOut, t, 0.14, 0.09 * g, 'bandpass', 1900, 0.7); osc(musOut, 190, t, 0.08, 0.05 * g, 'triangle'); }
-  function hat(t, g) { semprot(musOut, t, 0.035, 0.035 * g, 'highpass', 7500); }
+  function kick(t, g) { osc(musOut, 150, t, 0.28, 0.55 * g, 'sine', 45); osc(musOut, 300, t, 0.03, 0.12 * g, 'triangle', 120); }
+  function snare(t, g) { semprot(musOut, t, 0.14, 0.16 * g, 'bandpass', 1900, 0.7); osc(musOut, 190, t, 0.08, 0.09 * g, 'triangle'); }
+  function hat(t, g) { semprot(musOut, t, 0.035, 0.06 * g, 'highpass', 7500); }
 
-  var MUS = { lagu: null, jalan: false, timer: null, langkah: 0, waktu: 0, halaman: 'petualangan', sementara: null };
+  var DAFTAR = { ceria: ['petualangan', 'riang', 'pantai', 'robot', 'jalan', 'gelembung', 'juara'], fokus: ['tenang', 'gelembung', 'jalan', 'pantai'] };
+  var MUS = { lagu: null, jalan: false, timer: null, langkah: 0, waktu: 0, halaman: 'petualangan', daftar: 'ceria', otomatis: null, sementara: null, durasi: 70 };
   function langkahMusik() {
     if (!ctx || !MUS.jalan) { return; }
     var L = MUS.lagu, det = 60 / L.bpm / 2, bars = L.akor.length;
@@ -111,29 +127,44 @@
       var n = MUS.langkah, bar = Math.floor(n / 8) % bars, k = n % 8, siklus = Math.floor(n / (8 * bars)), ak = L.akor[bar], t = MUS.waktu;
       var bc = L.bass && L.bass[k];
       if (bc && bc !== '.') { alat(L.bassAlat, ak.b + (bc === 'f' ? 19 : bc === 'o' ? 24 : 12), t, L.bassLama || 0.45, L.bassG); }
-      if (k === 0 && L.pad) { ak.n.forEach(function (m) { osc(musOut, hz(m), t, det * 8, L.pad, 'sine', null, 0.25); }); }
+      if (k === 0 && L.pad) { ak.n.forEach(function (m) { osc(musOut, hz(m), t, det * 8, L.pad * KERAS, 'sine', null, 0.25); }); }
       var leadAktif = L.lead && siklus % L.leadTiap === 0;
       if (leadAktif) { var m = L.lead[(bar * 8 + k) % L.lead.length]; if (m) { alat(L.leadAlat, m, t, det * 1.8, L.leadG); } }
       if (L.arp && !(leadAktif && L.arpSaatLead === false)) { var ix = L.arp[k]; if (ix !== null && ix !== undefined) { alat(L.arpAlat, ak.n[ix] + (L.arpOkt || 0), t, 0.5, L.arpG); } }
-      if (L.skank && L.skank[k] === 'x') { ak.n.slice(0, 3).forEach(function (m) { osc(musOut, hz(m), t, 0.11, 0.022, 'square'); }); }
+      if (L.skank && L.skank[k] === 'x') { ak.n.slice(0, 3).forEach(function (m) { osc(musOut, hz(m), t, 0.11, 0.022 * KERAS, 'square'); }); }
+      if (L.komp && L.komp[k] === 'x') { ak.n.forEach(function (m) { alat('ep', m, t, 0.35, 0.03); }); }
+      if (L.bassPola) { var bo = L.bassPola[k]; if (bo !== null && bo !== undefined) { alat(L.bassAlat, ak.b + 12 + bo, t, det * 1.8, L.bassG); } }
       if (L.kilau && L.kilau.langkah.indexOf(k) >= 0 && (!L.kilau.ganjil || siklus % 2 === 1) && Math.random() < L.kilau.p) { alat(L.kilau.alat, acakDari(L.kilau.skala), t, 0.6, 0.06); }
       if (L.drum) {
         var g = L.drumG || 1;
         if (L.drum.k && L.drum.k[k] === 'x') { kick(t, g); }
         if (L.drum.s && L.drum.s[k] === 'x') { snare(t, g); }
         if (L.drum.h && L.drum.h[k] === 'x') { hat(t, g * (k % 2 ? 0.6 : 1)); }
+        if (bar === bars - 1 && siklus % 2 === 1 && k >= 4) { snare(t, g * 0.35 * (k - 3)); snare(t + det / 2, g * 0.3 * (k - 3)); }
       }
+      /* mode otomatis: ganti lagu di awal putaran setelah sekitar satu menit */
+      if (k === 7 && bar === bars - 1 && !MUS.sementara && data.lagu === 'auto' && (n + 1) * det >= MUS.durasi) { setTimeout(laguBerikut, 0); MUS.waktu += det; MUS.langkah++; break; }
       MUS.waktu += det; MUS.langkah++;
     }
   }
-  function laguAktif() { return MUS.sementara || (data.lagu !== 'auto' && LAGU_ID[data.lagu] ? data.lagu : MUS.halaman); }
-  function targetVolume() { return 0.5 * data.volume * (MUS.redam ? 0.25 : 1); }
+  function laguAktif() { return MUS.sementara || (data.lagu !== 'auto' && LAGU_ID[data.lagu] ? data.lagu : MUS.otomatis || MUS.halaman); }
+  function laguBerikut() {
+    var d = DAFTAR[MUS.daftar], i = d.indexOf(MUS.lagu ? MUS.lagu.id : MUS.halaman);
+    MUS.otomatis = d[(i + 1) % d.length];
+    musikMulai(true);
+    JP.toast('♪ ' + LAGU_ID[MUS.otomatis].nama, 1800);
+  }
+  function targetVolume() { return 1.25 * data.volume * (MUS.redam ? 0.25 : 1); }
   function musikMulai(paksa) {
     if (!data.musik || !siapkan()) { return; }
     var id = laguAktif();
     if (MUS.jalan && MUS.lagu && MUS.lagu.id === id && !paksa) { return; }
     var lanjut = 0;
-    try { var s = JSON.parse(sessionStorage.getItem('jp-musik') || 'null'); if (s && s.id === id && !MUS.lagu) { lanjut = s.langkah; } } catch (e) { /* abaikan */ }
+    try {
+      var s = JSON.parse(sessionStorage.getItem('jp-musik') || 'null');
+      if (s && !MUS.lagu && !MUS.sementara && data.lagu === 'auto' && DAFTAR[MUS.daftar].indexOf(s.id) >= 0) { MUS.otomatis = s.id; id = s.id; }
+      if (s && s.id === id && !MUS.lagu) { lanjut = s.langkah; }
+    } catch (e) { /* abaikan */ }
     var mulai = function () {
       MUS.lagu = LAGU_ID[id]; MUS.langkah = lanjut; MUS.waktu = ctx.currentTime + 0.06; MUS.jalan = true;
       clearInterval(MUS.timer); MUS.timer = setInterval(langkahMusik, 90); langkahMusik();
@@ -212,11 +243,11 @@
     var daftar = el('div', { 'class': 'stack', style: 'gap:6px', role: 'radiogroup', 'aria-label': 'Pilih lagu' });
     function isiDaftar() {
       daftar.textContent = '';
-      [{ id: 'auto', nama: 'Otomatis', ket: 'Lagu menyesuaikan halaman' }].concat(LAGU).forEach(function (l) {
+      [{ id: 'auto', nama: 'Otomatis', ket: 'Berganti-ganti lagu sendiri' }].concat(LAGU).forEach(function (l) {
         var pilih = data.lagu === l.id;
         daftar.appendChild(el('button', { 'class': 'lagu' + (pilih ? ' pilih' : ''), type: 'button', role: 'radio', 'aria-checked': pilih ? 'true' : 'false', onclick: function () {
-          data.lagu = l.id; data.musik = true; MUS.sementara = null; JP.simpan(); isiDaftar(); cekMusik.checked = true; musikMulai(true);
-          JP.toast('Lagu: ' + (l.id === 'auto' ? LAGU_ID[MUS.halaman].nama + ' (otomatis)' : l.nama));
+          data.lagu = l.id; data.musik = true; MUS.sementara = null; MUS.otomatis = null; JP.simpan(); isiDaftar(); cekMusik.checked = true; musikMulai(true);
+          JP.toast(l.id === 'auto' ? 'Otomatis: lagu berganti sendiri sekitar setiap satu menit' : 'Lagu: ' + l.nama + ' (diulang terus)');
         } }, [el('b', { text: l.nama }), el('span', { 'class': 'small muted', text: l.ket })]));
       });
     }
@@ -263,8 +294,8 @@
   }
   JP.tombolSuara = tombolSuara;
   JP.audio = {
-    LAGU: LAGU, status: function () { return { jalan: MUS.jalan, lagu: MUS.lagu && MUS.lagu.id, langkah: MUS.langkah, ctx: ctx && ctx.state }; }, tombolBaca: tombolBaca, nasi: nasiBicara, henti: hentiVokal,
-    halaman: function (id) { if (LAGU_ID[id]) { MUS.halaman = id; if (MUS.jalan) { musikMulai(); } } },
+    LAGU: LAGU, aturDurasi: function (d) { MUS.durasi = d; }, status: function () { return { jalan: MUS.jalan, lagu: MUS.lagu && MUS.lagu.id, langkah: MUS.langkah, ctx: ctx && ctx.state }; }, tombolBaca: tombolBaca, nasi: nasiBicara, henti: hentiVokal,
+    halaman: function (id, daftar) { if (LAGU_ID[id]) { MUS.halaman = id; MUS.daftar = DAFTAR[daftar] ? daftar : 'ceria'; if (MUS.jalan) { musikMulai(); } } },
     rayakan: function (id) { MUS.sementara = id; if (data.musik && ctx) { musikMulai(true); } },
     selesaiRayakan: function () { MUS.sementara = null; if (MUS.jalan) { musikMulai(true); } }
   };

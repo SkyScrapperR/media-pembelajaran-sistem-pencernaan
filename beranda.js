@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var el = JP.el, d = JP.data, pk = JP.pangkat();
-  JP.audio.halaman('petualangan');
+  JP.audio.halaman('petualangan', 'ceria');
   var posSelesai = 0, bintang = 0;
   Object.keys(d.pos).forEach(function (k) { bintang += d.pos[k].bintang || 0; if (d.pos[k].bintang > 0) { posSelesai++; } });
   function hias(path) { return el('span', { 'class': 'hias', html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>' }); }

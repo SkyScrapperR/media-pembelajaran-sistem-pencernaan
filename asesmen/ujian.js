@@ -3,7 +3,7 @@
   'use strict';
   var el = JP.el, S = JP_SOAL, app = document.getElementById('app');
   var soal, i, jawab, peta;
-  JP.audio.halaman('tenang');
+  JP.audio.halaman('tenang', 'fokus');
   function bingkai(isi, lebar) { app.textContent = ''; app.appendChild(el('div', { 'class': 'wrap', style: lebar ? 'width:min(920px,100%)' : '' }, [JP.kepala('asesmen')].concat(isi))); window.scrollTo(0, 0); }
   function awal() {
     bingkai([el('section', { 'class': 'panel stack', style: 'align-items:center;text-align:center' }, [

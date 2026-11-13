@@ -3,7 +3,7 @@
   'use strict';
   var el = JP.el, S = JP_SOAL, app = document.getElementById('app');
   var PIN = 'guru2026';
-  JP.audio.halaman('tenang');
+  JP.audio.halaman('tenang', 'fokus');
   var MATERI = ['Organ pencernaan dan letaknya', 'Fungsi organ pencernaan dan organ tambahan', 'Urutan dan proses perjalanan makanan', 'Pencernaan mekanik dan kimiawi', 'Menjaga kesehatan pencernaan'];
   var BENTUK = { pg: 'Pilihan ganda', pgk: 'Pilihan ganda kompleks', jodoh: 'Menjodohkan', urut: 'Mengurutkan', isian: 'Isian singkat' };
   function tabel(kepala, baris) {

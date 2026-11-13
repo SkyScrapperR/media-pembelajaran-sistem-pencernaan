@@ -5,7 +5,7 @@
   var LENCANA = JP.LENCANA;
   var no = Math.max(1, Math.min(6, parseInt((location.search.match(/pos=(\d)/) || [])[1], 10) || 1));
   var pos = S.POS[no - 1], arena;
-  JP.audio.halaman('riang');
+  JP.audio.halaman('riang', 'ceria');
 
   function bingkai(isi) {
     app.textContent = '';

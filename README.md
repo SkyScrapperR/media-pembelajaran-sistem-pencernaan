@@ -56,7 +56,8 @@ TANPA_CONTOH=1 python tools/gen_audio.py asesmen.json audio/asesmen
 
 ## Musik dan efek bunyi
 
-`assets/audio.js` menyusun 5 lagu latar langsung dengan Web Audio (tanpa file): Petualangan Si Nasi,
-Riang Ceria, Tenang Berpikir, Gelembung Mimpi, dan Pesta Juara. Setiap halaman punya lagu bawaan,
-dan pemain bisa memilih lagu, mengatur volume, serta mematikan musik, efek bunyi, atau suara Si Nasi
-dari tombol musik di pojok kanan atas.
+`assets/audio.js` menyusun 8 lagu latar langsung dengan Web Audio (tanpa file): Petualangan Si Nasi,
+Riang Ceria, Tenang Berpikir, Gelembung Mimpi, Pantai Tropis, Jalan-jalan Santai, Robot 8-bit, dan Pesta Juara.
+Mode Otomatis berganti lagu sendiri sekitar setiap satu menit: daftar ceria di beranda, peta, dan pos;
+daftar tenang di Cek Bekal dan Ujian. Pemain bisa memilih satu lagu, mengatur volume, serta mematikan musik,
+efek bunyi, atau suara Si Nasi dari tombol musik di pojok kanan atas.

@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var KEY = 'jelajah-pencernaan:v1';
-  var KOSONG = { nama: '', suara: true, musik: true, vokal: true, lagu: 'auto', volume: 0.7, tingkat: 0, diag: null, pos: {}, ujian: null, riwayat: [] };
+  var KOSONG = { nama: '', suara: true, musik: true, vokal: true, lagu: 'auto', volume: 0.85, tingkat: 0, diag: null, pos: {}, ujian: null, riwayat: [] };
   function muat() {
     try { var r = JSON.parse(localStorage.getItem(KEY) || 'null'); if (r) { var d = {}; for (var k in KOSONG) { d[k] = r[k] !== undefined ? r[k] : KOSONG[k]; } return d; } } catch (e) { /* penyimpanan tidak tersedia */ }
     return JSON.parse(JSON.stringify(KOSONG));

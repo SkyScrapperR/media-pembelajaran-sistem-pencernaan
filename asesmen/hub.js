@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var el = JP.el, d = JP.data, S = JP_SOAL, app = document.getElementById('app');
-  JP.audio.halaman('petualangan');
+  JP.audio.halaman('pantai', 'ceria');
   JP.cekNaik();
   function gambar() {
     app.textContent = '';
