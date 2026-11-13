@@ -121,14 +121,14 @@
     var lama = JP.data.ujian, tuntas = total >= S.KKTP, b = total >= 90 ? 3 : total >= S.KKTP ? 2 : total >= 60 ? 1 : 0;
     JP.data.ujian = { nilai: Math.max(total, lama ? lama.nilai : 0), terakhir: total, waktu: new Date().toISOString(), perTP: perTP, coba: (lama ? lama.coba || 1 : 0) + 1 }; JP.simpan();
     JP.catat('Sumatif', S.predikat(total), total);
-    if (tuntas) { JP.bunyi.menang(); } else { JP.bunyi.salah(); }
+    if (tuntas) { JP.bunyi.menang(); JP.konfeti(150); } else { JP.bunyi.salah(); }
     var tgl = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     bingkai([
       el('section', { 'class': 'panel stack pop', style: 'align-items:center;text-align:center' }, [
         JP.nasi(84, tuntas ? 'senang' : 'sedih'),
         el('p', { 'class': 'kicker', text: 'Nilai Ujian Akhir' }),
         el('p', { style: 'font-family:var(--font-display);font-size:84px;line-height:1;color:var(--sun);font-variant-numeric:tabular-nums', text: String(total) }),
-        el('div', { style: 'transform:scale(1.5);margin:4px 0 8px' }, JP.bintang(b)),
+        JP.bintangMuncul(b),
         el('div', { 'class': 'row', style: 'justify-content:center' }, [el('span', { 'class': 'badge ' + (tuntas ? 'good' : 'sun'), text: S.predikat(total) }), el('span', { 'class': 'badge', text: tuntas ? 'Tuntas' : 'Belum tuntas (batas ' + S.KKTP + ')' })]),
         el('p', { 'class': 'lead', text: tuntas ? 'Selamat! Si Nasi sampai di ujung perjalanan berkat kamu.' : 'Jangan menyerah. Lihat bagian yang masih lemah di bawah, pelajari lagi, lalu ulangi ujiannya.' }),
         el('div', { 'class': 'row noprint', style: 'justify-content:center' }, [
@@ -137,10 +137,11 @@
           el('a', { 'class': 'btn', href: './', text: 'Kembali ke asesmen' })
         ])
       ]),
-      tuntas ? el('section', { 'class': 'panel stack', style: 'align-items:center;text-align:center;border:2px dashed var(--sun)' }, [
+      tuntas ? el('section', { 'class': 'sertifikat' }, [
+        JP.medali('A', '', false, '#c98a2b'),
         el('p', { 'class': 'kicker', text: 'Sertifikat Penjelajah Pencernaan' }),
         el('p', { 'class': 'muted', text: 'diberikan kepada' }),
-        el('h2', { style: 'font-size:clamp(28px,7vw,44px);color:var(--sun);overflow-wrap:anywhere', text: JP.data.nama || 'Penjelajah' }),
+        el('h2', { text: JP.data.nama || 'Penjelajah' }),
         el('p', { text: 'yang telah menuntaskan Ujian Akhir Penjelajah materi sistem pencernaan manusia dengan nilai ' + total + ' (' + S.predikat(total).toLowerCase() + ').' }),
         el('p', { 'class': 'small muted', text: tgl }),
         el('button', { 'class': 'btn small noprint', type: 'button', text: 'Cetak sertifikat', onclick: function () { window.print(); } })

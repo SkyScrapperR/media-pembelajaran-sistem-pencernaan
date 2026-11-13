@@ -74,11 +74,16 @@
     bola.appendChild(s('circle', { cx: -3.5, cy: -1.5, r: 1.6, fill: LINE })); bola.appendChild(s('circle', { cx: 3.5, cy: -1.5, r: 1.6, fill: LINE }));
     bola.appendChild(s('path', { d: 'M-3.5,3.5 q3.5,3 7,0', fill: 'none', stroke: LINE, 'stroke-width': 1.5, 'stroke-linecap': 'round' }));
     svg.atur = function (i) {
-      if (!total) { total = path.getTotalLength(); maju.setAttribute('stroke-dasharray', total); for (var k = 0; k < n; k++) { var pt = path.getPointAtLength(total * (k + 0.5) / n), c = s('circle', { cx: pt.x, cy: pt.y, r: 4, fill: '#12262d', stroke: '#fff', 'stroke-width': 1.5 }); titik.push(c); svg.insertBefore(c, bola); } }
-      var L = total * Math.min(1, (i + 0.5) / n), p = path.getPointAtLength(L);
+      if (!titik.length) { total = path.getTotalLength(); maju.setAttribute('stroke-dasharray', total); for (var k = 0; k < n; k++) { var pt = path.getPointAtLength(total * (k + 0.5) / n), c = s('circle', { cx: pt.x, cy: pt.y, r: 4, fill: '#12262d', stroke: '#fff', 'stroke-width': 1.5 }); titik.push(c); svg.insertBefore(c, bola); } }
+      svg.pecahan(Math.min(1, (i + 0.5) / n));
+      titik.forEach(function (c, k) { c.setAttribute('fill', k < i ? '#ffc857' : '#12262d'); });
+    };
+    /* posisi bebas 0..1 di sepanjang saluran, untuk animasi */
+    svg.pecahan = function (f) {
+      if (!total) { total = path.getTotalLength(); maju.setAttribute('stroke-dasharray', total); }
+      var L = total * f, p = path.getPointAtLength(L);
       maju.setAttribute('stroke-dashoffset', total - L);
       bola.setAttribute('transform', 'translate(' + p.x + ' ' + p.y + ')');
-      titik.forEach(function (c, k) { c.setAttribute('fill', k < i ? '#ffc857' : '#12262d'); });
     };
     svg.appendChild(bola);
     return svg;

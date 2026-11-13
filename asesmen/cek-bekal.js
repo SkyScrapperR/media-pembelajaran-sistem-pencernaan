@@ -47,7 +47,7 @@
     ]);
   }
   function selesai() {
-    JP.bunyi.menang();
+    JP.bunyi.menang(); JP.konfeti(60);
     JP.data.diag = { waktu: new Date().toISOString(), items: hasil }; JP.simpan();
     var hitung = {}; Object.keys(S.KATEGORI).forEach(function (k) { hitung[k] = hasil.filter(function (h) { return h.kat === k; }).length; });
     JP.catat('Diagnostik', Object.keys(hitung).map(function (k) { return S.KATEGORI[k].n + ' ' + hitung[k]; }).join(', '), null);

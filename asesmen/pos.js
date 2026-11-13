@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var el = JP.el, S = JP_SOAL, app = document.getElementById('app');
-  var LENCANA = ['Pemilah Jitu', 'Navigator Nasi', 'Detektif Organ', 'Penjodoh Cermat', 'Sahabat Sehat', 'Penunjuk Tepat'];
+  var LENCANA = JP.LENCANA;
   var no = Math.max(1, Math.min(6, parseInt((location.search.match(/pos=(\d)/) || [])[1], 10) || 1));
   var pos = S.POS[no - 1], arena;
 
@@ -35,15 +35,16 @@
     var lama = JP.data.pos[no] || { bintang: 0, skor: 0, coba: 0 };
     JP.data.pos[no] = { bintang: Math.max(lama.bintang, b), skor: Math.max(lama.skor, persen), coba: lama.coba + 1 }; JP.simpan();
     JP.catat('Formatif Pos ' + no, pos.judul, persen);
-    if (b > 0) { JP.bunyi.menang(); } else { JP.bunyi.salah(); }
+    var baru = b > 0 && lama.bintang === 0;
+    if (b > 0) { JP.bunyi.menang(); if (b === 3 || baru) { JP.konfeti(b === 3 ? 130 : 70); } } else { JP.bunyi.salah(); }
     var lanjut = JP.embed
       ? el('button', { 'class': 'btn primary', type: 'button', text: 'Kembali ke Perjalanan Nasi', onclick: function () { parent.postMessage('jp-pos-tutup', location.origin); } })
       : (no < 6 ? el('a', { 'class': 'btn primary', href: 'pos.html?pos=' + (no + 1), text: 'Pos berikutnya' }) : el('a', { 'class': 'btn primary', href: 'ujian.html', text: 'Lanjut ke Ujian Akhir' }));
     bingkai([judul(), el('section', { 'class': 'panel stack pop', style: 'align-items:center;text-align:center' }, [
-      JP.nasi(84, b > 0 ? 'senang' : 'sedih'),
+      el('div', { 'class': 'row', style: 'justify-content:center;align-items:flex-end;gap:14px' }, [el('div', { 'class': 'bob' }, JP.nasi(84, b > 0 ? 'senang' : 'sedih')), b > 0 ? el('div', { 'class': 'pop', style: 'animation-delay:.9s' }, JP.medali(no, LENCANA[no - 1])) : null]),
       el('h2', { text: b === 3 ? 'Sempurna!' : b === 2 ? 'Hebat!' : b === 1 ? 'Berhasil!' : 'Hampir!' }),
-      el('div', { style: 'transform:scale(1.6);margin:8px 0' }, JP.bintang(b)),
-      el('p', { text: 'Ketepatanmu ' + persen + '%.' + (b > 0 ? ' Kamu mendapat lencana ' + LENCANA[no - 1] + '.' : '') }),
+      JP.bintangMuncul(b),
+      el('p', { text: 'Ketepatanmu ' + persen + '%.' + (baru ? ' Lencana baru: ' + LENCANA[no - 1] + '!' : '') }),
       el('p', { 'class': 'muted', text: b === 3 ? pesan || 'Kamu sudah menguasai bagian ini.' : b > 0 ? 'Sudah bagus. Coba lagi untuk meraih 3 bintang.' : 'Belum cukup untuk mendapat bintang. Baca lagi penjelasannya di media belajar, lalu coba sekali lagi.' }),
       el('div', { 'class': 'row', style: 'justify-content:center' }, [
         b > 0 ? lanjut : null,
@@ -57,7 +58,7 @@
   var MAIN = {
     /* Geser kartu ke kiri atau kanan */
     pilah: function () {
-      var kartu = JP.acak(pos.kartu), i = 0, benar = 0;
+      var kartu = JP.acak(pos.kartu), i = 0, benar = 0, runtun = 0;
       function tampil() {
         var k = kartu[i], dijawab = false, sx = 0, dx = 0, seret = false;
         var kotak = el('div', { 'class': 'card-big pop', text: k.t });
@@ -65,10 +66,11 @@
         var tb = [el('button', { 'class': 'btn teal', type: 'button', text: '← ' + pos.kiri, onclick: function () { putus('kiri'); } }), el('button', { 'class': 'btn', type: 'button', style: 'border-color:var(--sun);color:var(--sun)', text: pos.kanan + ' →', onclick: function () { putus('kanan'); } })];
         function putus(arah) {
           if (dijawab) { return; } dijawab = true;
-          var ok = k.k === arah; if (ok) { benar++; JP.bunyi.benar(); } else { JP.bunyi.salah(); }
+          var ok = k.k === arah; if (ok) { benar++; runtun++; JP.bunyi.benar(); } else { runtun = 0; JP.bunyi.salah(); }
           kotak.style.transform = 'translateX(' + (arah === 'kiri' ? -40 : 40) + 'px) rotate(' + (arah === 'kiri' ? -4 : 4) + 'deg)'; kotak.style.opacity = '.55';
           tb.forEach(function (b) { b.disabled = true; });
           fb.className = 'fb pop stack ' + (ok ? 'good' : 'bad'); fb.hidden = false; fb.textContent = '';
+          if (ok && runtun >= 3) { fb.appendChild(el('span', { 'class': 'kombo pop', style: 'align-self:flex-start', text: runtun + ' benar beruntun!' })); }
           fb.appendChild(el('b', { text: (ok ? 'Tepat! ' : 'Belum tepat. ') + 'Ini termasuk ' + (k.k === 'kiri' ? pos.kiri : pos.kanan).toLowerCase() + '.' }));
           fb.appendChild(el('span', { text: k.why }));
           var nx = el('button', { 'class': 'btn primary small', type: 'button', style: 'align-self:flex-start', text: i + 1 < kartu.length ? 'Kartu berikutnya' : 'Lihat hasil', onclick: function () { i++; if (i < kartu.length) { tampil(); } else { selesai(benar / kartu.length); } } });
