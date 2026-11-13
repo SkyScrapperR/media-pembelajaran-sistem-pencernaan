@@ -22,10 +22,10 @@ SAMPLES = [
 ]
 
 
-async def say(text, voice, rate, path):
+async def say(text, voice, rate, path, pitch="+0Hz"):
     for attempt in range(3):
         try:
-            await edge_tts.Communicate(text, voice, rate=rate).save(path)
+            await edge_tts.Communicate(text, voice, rate=rate, pitch=pitch).save(path)
             if os.path.getsize(path) > 1000:
                 return True
         except Exception as e:  # noqa: BLE001
@@ -38,14 +38,19 @@ async def main(src, out):
     clips = json.load(open(src, encoding="utf-8"))
     os.makedirs(out, exist_ok=True)
     done = {}
-    for key, text in clips.items():
-        ok = await say(text, VOICE, RATE, os.path.join(out, key + ".mp3"))
+    for key, item in clips.items():
+        if isinstance(item, dict):
+            ok = await say(item["teks"], item.get("voice", VOICE), item.get("rate", RATE), os.path.join(out, key + ".mp3"), item.get("pitch", "+0Hz"))
+        else:
+            ok = await say(item, VOICE, RATE, os.path.join(out, key + ".mp3"))
         print(("ok  " if ok else "GAGAL ") + key)
         if ok:
             done[key] = key + ".mp3"
-    if len(done) == len(clips):
+    if done:
         json.dump({"voice": VOICE, "label": LABEL, "files": done},
                   open(os.path.join(out, "manifest.json"), "w"), ensure_ascii=False)
+    if os.environ.get("TANPA_CONTOH") or "coba" not in clips:
+        return
     sample_dir = os.path.join(out, "contoh")
     os.makedirs(sample_dir, exist_ok=True)
     text = clips["coba"] + " " + clips["tahap-1"]

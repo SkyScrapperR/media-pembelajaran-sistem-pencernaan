@@ -3,6 +3,7 @@
   'use strict';
   var el = JP.el, S = JP_SOAL, app = document.getElementById('app');
   var soal, i, jawab, peta;
+  JP.audio.halaman('tenang');
   function bingkai(isi, lebar) { app.textContent = ''; app.appendChild(el('div', { 'class': 'wrap', style: lebar ? 'width:min(920px,100%)' : '' }, [JP.kepala('asesmen')].concat(isi))); window.scrollTo(0, 0); }
   function awal() {
     bingkai([el('section', { 'class': 'panel stack', style: 'align-items:center;text-align:center' }, [
@@ -72,7 +73,7 @@
   };
   function tampil() {
     var s = soal[i], q = s.q;
-    var maju = el('button', { 'class': 'btn primary', type: 'button', onclick: function () { if (i + 1 < soal.length) { i++; tampil(); } else { var kosong = soal.filter(function (_, k) { return !terisi(k); }).length; if (!kosong || confirm('Masih ada ' + kosong + ' soal yang belum lengkap. Selesaikan ujian sekarang?')) { nilai(); } } } });
+    var maju = el('button', { 'class': 'btn primary', type: 'button', onclick: function () { JP.audio.henti(); if (i + 1 < soal.length) { JP.bunyi.naik(i); i++; tampil(); } else { var kosong = soal.filter(function (_, k) { return !terisi(k); }).length; if (!kosong || confirm('Masih ada ' + kosong + ' soal yang belum lengkap. Selesaikan ujian sekarang?')) { nilai(); } } } });
     var isi = el('div', {});
     function tombol() { maju.textContent = i + 1 < soal.length ? (terisi(i) ? 'Lanjut' : 'Lewati dulu') : 'Selesai'; }
     function segar() { isi.textContent = ''; isi.appendChild(RENDER[q.tipe](s, segar, tombol)); tombol(); }
@@ -81,8 +82,8 @@
       el('div', { 'class': 'hud' }, [el('span', { text: 'Soal ' + (i + 1) + ' dari ' + soal.length }), el('span', { 'class': 'badge', text: 'Skor soal ini: ' + q.skor })]),
       el('div', { 'class': 'meter' }, el('i', { style: 'width:' + (i / soal.length * 100) + '%;background:var(--sun)' })),
       el('div', { style: 'display:flex;gap:16px;align-items:flex-start' }, [
-        el('section', { 'class': 'panel stack', style: 'flex:1;min-width:0' }, [el('h2', { style: 'font-size:20px;line-height:1.3', text: q.q }), isi,
-          el('div', { 'class': 'row', style: 'justify-content:space-between' }, [el('button', { 'class': 'btn', type: 'button', disabled: i === 0, text: 'Sebelumnya', onclick: function () { i--; tampil(); } }), maju])]),
+        el('section', { 'class': 'panel stack', style: 'flex:1;min-width:0' }, [el('div', { 'class': 'row', style: 'justify-content:space-between;flex-wrap:nowrap;align-items:flex-start' }, [el('h2', { style: 'font-size:20px;line-height:1.3', text: q.q }), JP.audio.tombolBaca('ujian-' + q.id, S.teksBaca(q), 'Dengarkan soal')]), isi,
+          el('div', { 'class': 'row', style: 'justify-content:space-between' }, [el('button', { 'class': 'btn', type: 'button', disabled: i === 0, text: 'Sebelumnya', onclick: function () { JP.audio.henti(); JP.bunyi.balik(); i--; tampil(); } }), maju])]),
         el('aside', { 'class': 'petaSisi', style: 'flex:0 0 170px', 'aria-hidden': 'true' }, peta)
       ])
     ], true);
@@ -121,18 +122,28 @@
     var lama = JP.data.ujian, tuntas = total >= S.KKTP, b = total >= 90 ? 3 : total >= S.KKTP ? 2 : total >= 60 ? 1 : 0;
     JP.data.ujian = { nilai: Math.max(total, lama ? lama.nilai : 0), terakhir: total, waktu: new Date().toISOString(), perTP: perTP, coba: (lama ? lama.coba || 1 : 0) + 1 }; JP.simpan();
     JP.catat('Sumatif', S.predikat(total), total);
-    if (tuntas) { JP.bunyi.menang(); JP.konfeti(150); } else { JP.bunyi.salah(); }
+    /* angka nilai berputar naik dengan gulungan drum, lalu perayaan */
+    var angka = el('p', { 'class': 'angka-besar', text: '0' });
+    JP.bunyi.drumroll(1.5);
+    var t0 = performance.now();
+    (function hitung(t) {
+      var k = Math.min(1, (t - t0) / 1500), e = 1 - Math.pow(1 - k, 3); angka.textContent = String(Math.round(total * e));
+      if (k < 1) { requestAnimationFrame(hitung); return; }
+      JP.bunyi.cring();
+      if (tuntas) { JP.bunyi.menang(); JP.konfeti(160); JP.audio.rayakan('juara'); setTimeout(JP.bunyi.lencana, 700); } else { JP.bunyi.salah(); }
+      JP.audio.nasi(tuntas ? 'lulus' : 'belum'); JP.cekNaik();
+    })(t0);
     var tgl = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     bingkai([
       el('section', { 'class': 'panel stack pop', style: 'align-items:center;text-align:center' }, [
         JP.nasi(84, tuntas ? 'senang' : 'sedih'),
         el('p', { 'class': 'kicker', text: 'Nilai Ujian Akhir' }),
-        el('p', { style: 'font-family:var(--font-display);font-size:84px;line-height:1;color:var(--sun);font-variant-numeric:tabular-nums', text: String(total) }),
+        angka,
         JP.bintangMuncul(b),
         el('div', { 'class': 'row', style: 'justify-content:center' }, [el('span', { 'class': 'badge ' + (tuntas ? 'good' : 'sun'), text: S.predikat(total) }), el('span', { 'class': 'badge', text: tuntas ? 'Tuntas' : 'Belum tuntas (batas ' + S.KKTP + ')' })]),
         el('p', { 'class': 'lead', text: tuntas ? 'Selamat! Si Nasi sampai di ujung perjalanan berkat kamu.' : 'Jangan menyerah. Lihat bagian yang masih lemah di bawah, pelajari lagi, lalu ulangi ujiannya.' }),
         el('div', { 'class': 'row noprint', style: 'justify-content:center' }, [
-          el('button', { 'class': 'btn' + (tuntas ? '' : ' primary'), type: 'button', text: 'Ulangi ujian', onclick: mulai }),
+          el('button', { 'class': 'btn' + (tuntas ? '' : ' primary'), type: 'button', text: 'Ulangi ujian', onclick: function () { JP.audio.selesaiRayakan(); mulai(); } }),
           tuntas ? null : el('a', { 'class': 'btn', href: '../belajar/', text: 'Belajar lagi' }),
           el('a', { 'class': 'btn', href: './', text: 'Kembali ke asesmen' })
         ])

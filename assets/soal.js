@@ -141,5 +141,19 @@
   var KKTP = 75;
   function predikat(n) { return n >= 90 ? 'Sangat baik' : n >= KKTP ? 'Baik' : n >= 60 ? 'Cukup' : 'Perlu bimbingan'; }
 
-  window.JP_SOAL = { TP: TP, IDENTITAS: IDENTITAS, DIAG: DIAG, KATEGORI: KATEGORI, POS: POS, NAMA_ORGAN: NAMA_ORGAN, UJIAN: UJIAN, PEDOMAN: PEDOMAN, KKTP: KKTP, predikat: predikat };
+  /* kalimat Si Nasi (direkam saat build dengan suara anak yang ceria) */
+  var NASI = {
+    halo: ['Halo! Aku Si Nasi. Temani aku menjelajah perut, yuk!', 'Hihi, geli! Ayo kita mulai petualangannya!', 'Tahukah kamu? Perjalananku dari mulut sampai anus bisa satu sampai tiga hari, lho!', 'Jangan lupa kunyah makananmu sampai halus, ya!'],
+    sempurna: ['Wah, sempurna! Kamu memang penjelajah sejati!', 'Luar biasa! Tiga bintang untukmu!'],
+    bagus: ['Bagus sekali! Sedikit lagi kamu bisa dapat tiga bintang.', 'Hebat! Ayo coba lagi supaya bintangnya penuh.'],
+    coba: ['Tidak apa-apa, belajar memang begitu. Ayo coba sekali lagi!', 'Hampir! Baca lagi materinya, lalu kita coba lagi, ya.'],
+    lulus: ['Selamat! Kamu berhasil menuntaskan ujian. Ini sertifikatmu!'],
+    belum: ['Jangan menyerah! Ayo belajar lagi, lalu kita ulangi ujiannya bersama.'],
+    diag: ['Terima kasih sudah menjawab dengan jujur. Sekarang kita tahu bagian mana yang perlu dipelajari.'],
+    naik: ['Yeay, kamu naik tingkat! Teruskan petualanganmu!']
+  };
+  /* teks yang dibacakan tombol Dengarkan; dipakai juga saat membuat rekaman */
+  function teksBaca(q) { return q.q + (q.opsi ? ' Pilihannya: ' + q.opsi.join('; ') + '.' : ''); }
+  function teksPos(p) { return p.judul + '. ' + p.petunjuk; }
+  window.JP_SOAL = { NASI: NASI, teksBaca: teksBaca, teksPos: teksPos, TP: TP, IDENTITAS: IDENTITAS, DIAG: DIAG, KATEGORI: KATEGORI, POS: POS, NAMA_ORGAN: NAMA_ORGAN, UJIAN: UJIAN, PEDOMAN: PEDOMAN, KKTP: KKTP, predikat: predikat };
 })();

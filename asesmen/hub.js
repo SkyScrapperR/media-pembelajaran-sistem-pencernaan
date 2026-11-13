@@ -2,6 +2,8 @@
 (function () {
   'use strict';
   var el = JP.el, d = JP.data, S = JP_SOAL, app = document.getElementById('app');
+  JP.audio.halaman('petualangan');
+  JP.cekNaik();
   function gambar() {
     app.textContent = '';
     var bintang = 0, selesai = 0, pk = JP.pangkat();
@@ -14,8 +16,8 @@
     simpul.push({ bul: '★', jenis: 'Sumatif · setelah belajar', judul: 'Ujian Akhir Penjelajah', ket: 'Lima belas soal, nilai 0 sampai 100. Raih ' + S.KKTP + ' ke atas untuk mendapat sertifikat.', href: 'ujian.html', done: !!d.ujian, bos: true,
       status: d.ujian ? [el('span', { 'class': 'badge ' + (tuntas ? 'good' : 'sun'), text: 'Nilai terbaik ' + d.ujian.nilai + ' · ' + S.predikat(d.ujian.nilai) })] : null });
     var berikut = -1; simpul.some(function (s, i) { if (!s.done) { berikut = i; return true; } return false; });
-    var namaForm = el('form', { 'class': 'row', onsubmit: function (e) { e.preventDefault(); var v = e.target.elements.nama.value.trim(); if (v) { d.nama = v.slice(0, 30); JP.simpan(); JP.bunyi.benar(); gambar(); } } }, [
-      el('div', { 'class': 'bob' }, JP.nasi(64)),
+    var namaForm = el('form', { 'class': 'row', onsubmit: function (e) { e.preventDefault(); var v = e.target.elements.nama.value.trim(); if (v) { d.nama = v.slice(0, 30); JP.simpan(); JP.bunyi.koin(); JP.toast('Selamat datang, ' + d.nama + '!'); gambar(); } } }, [
+      el('button', { 'class': 'nasi-klik bob', type: 'button', 'aria-label': 'Ketuk Si Nasi', onclick: function (e) { var n = e.currentTarget.firstChild; n.classList.remove('lompat'); void n.offsetWidth; n.classList.add('lompat'); JP.bunyi.pop(); JP.audio.nasi('halo'); } }, JP.nasi(64)),
       el('label', { 'class': 'stack', style: 'gap:4px;flex:1 1 220px' }, [el('span', { 'class': 'ucap', style: 'align-self:flex-start', text: 'Halo! Siapa namamu, Penjelajah?' }), el('input', { type: 'text', name: 'nama', maxlength: 30, autocomplete: 'off', placeholder: 'Tulis namamu di sini' })]),
       el('button', { 'class': 'btn primary', type: 'submit', text: 'Mulai' })
     ]);

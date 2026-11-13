@@ -46,3 +46,17 @@ python tools/gen_audio.py narasi.json audio
 ```
 
 Suara dapat diganti lewat variabel `NARASI_VOICE` (bawaan `id-ID-GadisNeural`).
+
+Rekaman asesmen (pembaca soal dan suara Si Nasi) disusun dari `assets/soal.js`:
+
+```
+node tools/suara_asesmen.js > asesmen.json
+TANPA_CONTOH=1 python tools/gen_audio.py asesmen.json audio/asesmen
+```
+
+## Musik dan efek bunyi
+
+`assets/audio.js` menyusun 5 lagu latar langsung dengan Web Audio (tanpa file): Petualangan Si Nasi,
+Riang Ceria, Tenang Berpikir, Gelembung Mimpi, dan Pesta Juara. Setiap halaman punya lagu bawaan,
+dan pemain bisa memilih lagu, mengatur volume, serta mematikan musik, efek bunyi, atau suara Si Nasi
+dari tombol musik di pojok kanan atas.

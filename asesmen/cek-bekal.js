@@ -3,6 +3,7 @@
   'use strict';
   var el = JP.el, S = JP_SOAL, app = document.getElementById('app');
   var soal = [], i = 0, hasil = [];
+  JP.audio.halaman('tenang');
   function bingkai(isi) { app.textContent = ''; app.appendChild(el('div', { 'class': 'wrap' }, [JP.kepala('asesmen')].concat(isi))); window.scrollTo(0, 0); }
   function ransel() {
     return el('div', { 'class': 'row', role: 'img', 'aria-label': hasil.length + ' dari ' + soal.length + ' bekal terisi', style: 'gap:6px' }, soal.map(function (_, k) {
@@ -36,22 +37,23 @@
       } }, [el('span', { 'class': 'key', text: 'ABCD'[n] }), el('span', { text: q.opsi[k] })]);
     });
     function jawab(yakin) {
-      JP.bunyi.balik();
+      JP.audio.henti(); JP.bunyi.koin();
       var benar = pilih === q.kunci;
       hasil.push({ id: q.id, pilih: pilih, benar: benar, yakin: yakin, kat: benar ? (yakin ? 'paham' : 'ragu') : (yakin ? 'mis' : 'belum') });
       i++; if (i < soal.length) { tanya(); } else { selesai(); }
     }
     bingkai([
       el('div', { 'class': 'hud' }, [el('span', { text: 'Bekal ' + (i + 1) + ' dari ' + soal.length }), ransel()]),
-      el('section', { 'class': 'panel stack' }, [el('h2', { text: q.q }), el('div', { 'class': 'stack', style: 'gap:8px' }, tombol), kotakYakin])
+      el('section', { 'class': 'panel stack' }, [el('div', { 'class': 'row', style: 'justify-content:space-between;flex-wrap:nowrap;align-items:flex-start' }, [el('h2', { text: q.q }), JP.audio.tombolBaca('diag-' + q.id, S.teksBaca(q), 'Dengarkan pertanyaan')]), el('div', { 'class': 'stack', style: 'gap:8px' }, tombol), kotakYakin])
     ]);
   }
   function selesai() {
-    JP.bunyi.menang(); JP.konfeti(60);
+    JP.bunyi.menang(); JP.konfeti(60); JP.audio.nasi('diag');
     JP.data.diag = { waktu: new Date().toISOString(), items: hasil }; JP.simpan();
     var hitung = {}; Object.keys(S.KATEGORI).forEach(function (k) { hitung[k] = hasil.filter(function (h) { return h.kat === k; }).length; });
     JP.catat('Diagnostik', Object.keys(hitung).map(function (k) { return S.KATEGORI[k].n + ' ' + hitung[k]; }).join(', '), null);
     var perlu = hasil.filter(function (h) { return h.kat !== 'paham'; });
+    JP.cekNaik();
     bingkai([
       el('section', { 'class': 'panel stack' }, [
         el('p', { 'class': 'kicker', text: 'Hasil Cek Bekal' }),

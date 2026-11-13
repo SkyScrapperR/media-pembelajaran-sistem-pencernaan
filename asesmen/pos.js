@@ -5,6 +5,7 @@
   var LENCANA = JP.LENCANA;
   var no = Math.max(1, Math.min(6, parseInt((location.search.match(/pos=(\d)/) || [])[1], 10) || 1));
   var pos = S.POS[no - 1], arena;
+  JP.audio.halaman('riang');
 
   function bingkai(isi) {
     app.textContent = '';
@@ -19,9 +20,9 @@
   }
   function awal() {
     bingkai([judul(), el('section', { 'class': 'panel stack' }, [
-      el('p', { text: pos.petunjuk }),
+      el('div', { 'class': 'row', style: 'justify-content:space-between;flex-wrap:nowrap;align-items:flex-start' }, [el('p', { text: pos.petunjuk }), JP.audio.tombolBaca('pos-' + pos.no, S.teksPos(pos), 'Dengarkan petunjuk')]),
       el('p', { 'class': 'small muted', text: 'Kamu langsung tahu benar atau salahnya. Kalau belum berhasil, boleh mencoba lagi.' }),
-      el('div', { 'class': 'row' }, el('button', { 'class': 'btn primary', type: 'button', text: 'Mulai', onclick: function () { JP.bunyi.ketuk(); main(); } }))
+      el('div', { 'class': 'row' }, el('button', { 'class': 'btn primary', type: 'button', text: 'Mulai', onclick: function () { JP.audio.henti(); JP.bunyi.ketuk(); main(); } }))
     ])]);
   }
   function main() {
@@ -36,7 +37,8 @@
     JP.data.pos[no] = { bintang: Math.max(lama.bintang, b), skor: Math.max(lama.skor, persen), coba: lama.coba + 1 }; JP.simpan();
     JP.catat('Formatif Pos ' + no, pos.judul, persen);
     var baru = b > 0 && lama.bintang === 0;
-    if (b > 0) { JP.bunyi.menang(); if (b === 3 || baru) { JP.konfeti(b === 3 ? 130 : 70); } } else { JP.bunyi.salah(); }
+    if (b > 0) { JP.bunyi.menang(); if (b === 3 || baru) { JP.konfeti(b === 3 ? 130 : 70); } if (baru) { setTimeout(JP.bunyi.lencana, 950); } } else { JP.bunyi.salah(); }
+    JP.audio.nasi(b === 3 ? 'sempurna' : b > 0 ? 'bagus' : 'coba'); JP.cekNaik();
     var lanjut = JP.embed
       ? el('button', { 'class': 'btn primary', type: 'button', text: 'Kembali ke Perjalanan Nasi', onclick: function () { parent.postMessage('jp-pos-tutup', location.origin); } })
       : (no < 6 ? el('a', { 'class': 'btn primary', href: 'pos.html?pos=' + (no + 1), text: 'Pos berikutnya' }) : el('a', { 'class': 'btn primary', href: 'ujian.html', text: 'Lanjut ke Ujian Akhir' }));
@@ -66,7 +68,7 @@
         var tb = [el('button', { 'class': 'btn teal', type: 'button', text: '← ' + pos.kiri, onclick: function () { putus('kiri'); } }), el('button', { 'class': 'btn', type: 'button', style: 'border-color:var(--sun);color:var(--sun)', text: pos.kanan + ' →', onclick: function () { putus('kanan'); } })];
         function putus(arah) {
           if (dijawab) { return; } dijawab = true;
-          var ok = k.k === arah; if (ok) { benar++; runtun++; JP.bunyi.benar(); } else { runtun = 0; JP.bunyi.salah(); }
+          var ok = k.k === arah; JP.bunyi.wus(); if (ok) { benar++; runtun++; if (runtun >= 3) { JP.bunyi.kombo(runtun); } else { JP.bunyi.benar(); } } else { runtun = 0; JP.bunyi.salah(); }
           kotak.style.transform = 'translateX(' + (arah === 'kiri' ? -40 : 40) + 'px) rotate(' + (arah === 'kiri' ? -4 : 4) + 'deg)'; kotak.style.opacity = '.55';
           tb.forEach(function (b) { b.disabled = true; });
           fb.className = 'fb pop stack ' + (ok ? 'good' : 'bad'); fb.hidden = false; fb.textContent = '';
@@ -101,7 +103,7 @@
           var b = this;
           if (pos.pengecoh[nm]) { salah++; JP.bunyi.salah(); b.classList.add('wrong', 'shake'); b.disabled = true; pesan.hidden = false; pesan.className = 'fb bad pop'; pesan.textContent = pos.pengecoh[nm]; segar(); return; }
           if (nm === urut[isi.length]) {
-            JP.bunyi.benar(); isi.push(nm); b.disabled = true; pesan.hidden = true; segar();
+            JP.bunyi.naik(isi.length); isi.push(nm); b.disabled = true; pesan.hidden = true; segar();
             if (isi.length === urut.length) { setTimeout(function () { selesai(Math.max(0, 1 - salah * 0.12), 'Kamu hafal seluruh rute perjalanan makanan.'); }, 700); }
           } else {
             salah++; JP.bunyi.salah(); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
@@ -128,8 +130,8 @@
         var lagi = el('button', { 'class': 'btn small teal', type: 'button', text: 'Buka petunjuk berikutnya', onclick: function () { if (buka < 3) { buka++; JP.bunyi.balik(); segar(); } } });
         var tb = pos.pilihan.map(function (nm) {
           return el('button', { 'class': 'chip', type: 'button', text: nm, onclick: function () {
-            if (usai) { return; }
-            if (nm === t.j) { usai = true; var dapat = 4 - buka; poin += dapat; JP.bunyi.benar(); this.classList.add('right'); tutup(true, 'Benar, aku ' + t.j.toLowerCase() + '! Kamu mendapat ' + dapat + ' poin.'); }
+            if (usai) { return; } JP.bunyi.ketuk();
+            if (nm === t.j) { usai = true; var dapat = 4 - buka; poin += dapat; JP.bunyi.koin(); setTimeout(JP.bunyi.benar, 160); this.classList.add('right'); tutup(true, 'Benar, aku ' + t.j.toLowerCase() + '! Kamu mendapat ' + dapat + ' poin.'); }
             else { JP.bunyi.salah(); this.classList.add('wrong'); this.disabled = true;
               if (buka < 3) { buka++; segar(); fb.hidden = false; fb.className = 'fb bad pop'; fb.textContent = 'Bukan ' + nm.toLowerCase() + '. Satu petunjuk lagi dibuka untukmu.'; }
               else { usai = true; tutup(false, 'Belum tepat. Jawabannya ' + t.j.toLowerCase() + '.'); } }
@@ -156,7 +158,7 @@
       var kiriB = pas.map(function (p, k) { return el('button', { 'class': 'chip', type: 'button', style: 'width:100%;border-radius:14px;text-align:left', text: p[0], onclick: function () { JP.bunyi.ketuk(); pilih = k; kiriB.forEach(function (b) { b.classList.remove('pick'); }); this.classList.add('pick'); } }); });
       var kananB = kanan.map(function (k) { return el('button', { 'class': 'chip', type: 'button', style: 'width:100%;border-radius:14px;text-align:left;min-height:52px;padding:6px 14px', text: pas[k][1], onclick: function () {
         if (pilih === null) { pesan.hidden = false; pesan.className = 'fb pop'; pesan.textContent = 'Ketuk dulu satu nama di kolom kiri.'; return; }
-        if (pilih === k) { JP.bunyi.benar(); cocok++; this.classList.add('right'); this.disabled = true; kiriB[k].classList.remove('pick'); kiriB[k].classList.add('right'); kiriB[k].disabled = true; pilih = null; pesan.hidden = false; pesan.className = 'fb good pop'; pesan.textContent = 'Tepat! ' + pas[k][0] + ': ' + pas[k][1].toLowerCase() + '.';
+        if (pilih === k) { JP.bunyi.koin(); cocok++; this.classList.add('right'); this.disabled = true; kiriB[k].classList.remove('pick'); kiriB[k].classList.add('right'); kiriB[k].disabled = true; pilih = null; pesan.hidden = false; pesan.className = 'fb good pop'; pesan.textContent = 'Tepat! ' + pas[k][0] + ': ' + pas[k][1].toLowerCase() + '.';
           if (cocok === pas.length) { setTimeout(function () { selesai(Math.max(0, 1 - salah * 0.15), 'Kamu tahu tugas setiap organ.'); }, 800); } }
         else { salah++; JP.bunyi.salah(); var b = this; b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); pesan.hidden = false; pesan.className = 'fb bad pop'; pesan.textContent = 'Belum cocok. Itu bukan tugas ' + pas[pilih][0].toLowerCase() + '. Coba pasangan lain.'; }
         segar();
@@ -173,7 +175,7 @@
       var svg = JP_peta({ pilih: function (id, g) {
         if (kunci) { return; }
         var t = tanya[i];
-        if (id === t.j) { kunci = true; var dapat = coba === 0 ? 2 : 1; poin += dapat; JP.bunyi.benar(); g.classList.add('right'); fb.hidden = false; fb.className = 'fb good pop'; fb.textContent = 'Tepat, itu ' + S.NAMA_ORGAN[id].toLowerCase() + '! +' + dapat + ' poin.'; setTimeout(maju, 1300); }
+        if (id === t.j) { kunci = true; var dapat = coba === 0 ? 2 : 1; poin += dapat; JP.bunyi.pop(); setTimeout(JP.bunyi.benar, 90); g.classList.add('right'); fb.hidden = false; fb.className = 'fb good pop'; fb.textContent = 'Tepat, itu ' + S.NAMA_ORGAN[id].toLowerCase() + '! +' + dapat + ' poin.'; setTimeout(maju, 1300); }
         else { coba++; JP.bunyi.salah(); g.classList.add('wrong'); setTimeout(function () { g.classList.remove('wrong'); }, 600);
           if (coba >= 2) { kunci = true; svg.organ[t.j].classList.add('right'); fb.hidden = false; fb.className = 'fb bad pop'; fb.textContent = 'Itu ' + S.NAMA_ORGAN[id].toLowerCase() + '. Jawabannya ' + S.NAMA_ORGAN[t.j].toLowerCase() + ', yang sekarang menyala hijau.'; setTimeout(maju, 2400); }
           else { fb.hidden = false; fb.className = 'fb bad pop'; fb.textContent = 'Itu ' + S.NAMA_ORGAN[id].toLowerCase() + '. Coba sekali lagi.'; } }

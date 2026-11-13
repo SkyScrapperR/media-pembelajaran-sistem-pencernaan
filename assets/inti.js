@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var KEY = 'jelajah-pencernaan:v1';
-  var KOSONG = { nama: '', suara: true, musik: true, diag: null, pos: {}, ujian: null, riwayat: [] };
+  var KOSONG = { nama: '', suara: true, musik: true, vokal: true, lagu: 'auto', volume: 0.7, tingkat: 0, diag: null, pos: {}, ujian: null, riwayat: [] };
   function muat() {
     try { var r = JSON.parse(localStorage.getItem(KEY) || 'null'); if (r) { var d = {}; for (var k in KOSONG) { d[k] = r[k] !== undefined ? r[k] : KOSONG[k]; } return d; } } catch (e) { /* penyimpanan tidak tersedia */ }
     return JSON.parse(JSON.stringify(KOSONG));
@@ -23,55 +23,9 @@
     return e;
   }
   function acak(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  /* ---------- efek bunyi (Web Audio, tanpa file) ---------- */
-  var ctx = null;
-  function ac() {
-    if (!data.suara) { return null; }
-    try { if (!ctx) { var C = window.AudioContext || window.webkitAudioContext; if (!C) { return null; } ctx = new C(); } if (ctx.state === 'suspended') { ctx.resume(); } return ctx; } catch (e) { return null; }
-  }
-  function nada(f, d, tipe, kapan, g, ke) {
-    var a = ac(); if (!a) { return; }
-    var t = a.currentTime + (kapan || 0), o = a.createOscillator(), v = a.createGain();
-    o.type = tipe || 'triangle'; o.frequency.setValueAtTime(f, t); if (ke) { o.frequency.exponentialRampToValueAtTime(ke, t + d); }
-    v.gain.setValueAtTime(0.0001, t); v.gain.exponentialRampToValueAtTime(g || 0.1, t + 0.012); v.gain.exponentialRampToValueAtTime(0.0001, t + d);
-    o.connect(v); v.connect(a.destination); o.start(t); o.stop(t + d + 0.03);
-  }
-  /* ---------- musik latar: disusun langsung oleh Web Audio, tanpa file ---------- */
-  var MUSIK = { jalan: false, timer: null, langkah: 0, waktu: 0, keluar: null };
-  var AKOR = [[48, 55, 60, 64, 67], [45, 52, 57, 60, 64], [41, 48, 53, 57, 60], [43, 50, 55, 59, 62]]; /* C, Am, F, G */
-  var POLA = [0, 2, 3, 4, 3, 2, 4, 2], MELODI = [72, 74, 76, 79, 81, 84];
-  function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
-  function petik(a, f, t, d, g, tipe) {
-    var o = a.createOscillator(), v = a.createGain(); o.type = tipe || 'triangle'; o.frequency.value = f;
-    v.gain.setValueAtTime(0.0001, t); v.gain.exponentialRampToValueAtTime(g, t + 0.015); v.gain.exponentialRampToValueAtTime(0.0001, t + d);
-    o.connect(v); v.connect(MUSIK.keluar); o.start(t); o.stop(t + d + 0.05);
-  }
-  function jadwal() {
-    var a = ctx; if (!a || !MUSIK.jalan) { return; }
-    var det = 60 / 92 / 2; /* not seperdelapan pada 92 ketuk per menit */
-    while (MUSIK.waktu < a.currentTime + 0.35) {
-      var n = MUSIK.langkah, bar = Math.floor(n / 8) % 4, k = n % 8, ak = AKOR[bar], t = MUSIK.waktu;
-      petik(a, hz(ak[POLA[k]] + 12), t, 0.5, 0.11);
-      if (k === 0 || k === 4) { petik(a, hz(ak[0] - 12), t, 0.9, 0.16, 'sine'); }
-      if (k === 0) { [ak[1], ak[3]].forEach(function (m) { petik(a, hz(m), t, det * 7.5, 0.035, 'sine'); }); }
-      if ((k === 2 || k === 6) && Math.floor(n / 32) % 2 === 1 && Math.random() < 0.75) { petik(a, hz(MELODI[Math.floor(Math.random() * MELODI.length)]), t, 0.7, 0.07, 'sine'); }
-      MUSIK.waktu += det; MUSIK.langkah++;
-    }
-  }
-  function musikMulai() {
-    if (MUSIK.jalan || !data.musik) { return; }
-    try {
-      if (!ctx) { var C = window.AudioContext || window.webkitAudioContext; if (!C) { return; } ctx = new C(); }
-      if (ctx.state === 'suspended') { ctx.resume(); }
-      if (!MUSIK.keluar) { var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2600; MUSIK.keluar = ctx.createGain(); MUSIK.keluar.connect(lp); lp.connect(ctx.destination); }
-      MUSIK.keluar.gain.cancelScheduledValues(ctx.currentTime); MUSIK.keluar.gain.setValueAtTime(0.0001, ctx.currentTime); MUSIK.keluar.gain.exponentialRampToValueAtTime(0.5, ctx.currentTime + 1.5);
-      MUSIK.jalan = true; MUSIK.waktu = ctx.currentTime + 0.08; MUSIK.timer = setInterval(jadwal, 110); jadwal();
-    } catch (e) { /* tanpa musik */ }
-  }
-  function musikHenti() {
-    if (!MUSIK.jalan) { return; } MUSIK.jalan = false; clearInterval(MUSIK.timer);
-    try { MUSIK.keluar.gain.cancelScheduledValues(ctx.currentTime); MUSIK.keluar.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.15); } catch (e) { /* abaikan */ }
-  }
+  /* bunyi, musik, dan suara Si Nasi ada di audio.js; ini cadangan bila file itu belum dimuat */
+  var diamFn = function () {};
+  var bunyi = { ketuk: diamFn, benar: diamFn, salah: diamFn, balik: diamFn, menang: diamFn, wus: diamFn, koin: diamFn, kombo: diamFn, lencana: diamFn, naikLevel: diamFn, pop: diamFn, blip: diamFn, naik: diamFn, drumroll: diamFn, cring: diamFn, bintang: diamFn };
   /* ---------- latar bergerak: gumpalan cahaya dan gelembung yang naik pelan ---------- */
   function latar() {
     var c = el('canvas', { 'class': 'latar', 'aria-hidden': 'true' }); document.body.insertBefore(c, document.body.firstChild);
@@ -97,16 +51,35 @@
         g.beginPath(); g.arc(x - p.r * 0.3, y - p.r * 0.3, p.r * 0.22, 0, 6.283); g.fillStyle = 'rgba(255,255,255,0.28)'; g.fill();
       });
     }
+    var serpih = [], pecah = 0;
+    var gambarAsli = gambar;
+    gambar = function (t) {
+      gambarAsli(t);
+      serpih = serpih.filter(function (q) { q.u += 0.035; return q.u < 1; });
+      serpih.forEach(function (q) { var r = q.r + q.u * 26; g.beginPath(); g.arc(q.x, q.y, r, 0, 6.283); g.lineWidth = 2.2 * (1 - q.u); g.strokeStyle = 'rgba(' + q.c + ',' + (0.7 * (1 - q.u)) + ')'; g.stroke(); });
+    };
+    /* gelembung di latar bisa dipecahkan dengan ketukan */
+    addEventListener('pointerdown', function (e) {
+      if (e.target.closest && e.target.closest('a,button,input,select,textarea,label,summary,details,.panel,.pintu,.node,.tile,.sertifikat,table,.opt,.chip,.card-big,.peta,.fb,.ucap,.maskot,.popsuara')) { return; }
+      for (var k = 0; k < butir.length; k++) {
+        var p = butir[k], x = p.x * W + Math.sin(p.f) * 14, y = p.y * H;
+        if (Math.hypot(e.clientX - x, e.clientY - y) < p.r + 16) {
+          serpih.push({ x: x, y: y, r: p.r, u: 0, c: p.c }); p.y = 1.08; p.x = Math.random(); pecah++;
+          JP.bunyi.pop(); if (pecah === 10) { toast('Wah, kamu pemecah gelembung sejati!'); }
+          break;
+        }
+      }
+    });
     function putar(t) { if (!document.hidden) { gambar(t); } requestAnimationFrame(putar); }
     if (diam) { gambar(0); } else { requestAnimationFrame(putar); }
   }
-  var bunyi = {
-    ketuk: function () { nada(520, 0.06, 'triangle', 0, 0.07); },
-    benar: function () { nada(660, 0.1); nada(990, 0.16, 'triangle', 0.08); },
-    salah: function () { nada(220, 0.24, 'sawtooth', 0, 0.05, 140); },
-    balik: function () { nada(420, 0.05, 'square', 0, 0.035); },
-    menang: function () { [523, 659, 784, 1047].forEach(function (f, i) { nada(f, 0.22, 'triangle', i * 0.11, 0.11); }); }
-  };
+  /* pesan singkat yang muncul di bawah layar */
+  var wadahToast = null;
+  function toast(teks, lama) {
+    if (!wadahToast) { wadahToast = el('div', { 'class': 'toasts', role: 'status', 'aria-live': 'polite' }); document.body.appendChild(wadahToast); }
+    var t = el('div', { 'class': 'toast', text: teks }); wadahToast.appendChild(t);
+    setTimeout(function () { t.classList.add('hilang'); setTimeout(function () { t.remove(); }, 400); }, lama || 2600);
+  }
   var IKON = {
     logo: '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 3c0 2 1 3 1 5s-3 2-3 5 3 4 6 4 4 1 4 3" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="15.5" cy="9" r="3" fill="#fff"/></svg>',
     bintang: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.9 6 6.6.8-4.9 4.6 1.3 6.5-5.9-3.3-5.9 3.3 1.3-6.5L2.5 9.4l6.6-.8z"/></svg>'
@@ -153,36 +126,44 @@
   /* bintang muncul satu per satu dengan bunyi */
   function bintangMuncul(n, maks) {
     var s = bintang(n, maks); s.classList.add('besar');
-    [].forEach.call(s.children, function (b, i) { if (i < n) { b.style.animationDelay = (0.25 + i * 0.3) + 's'; b.classList.add('muncul'); setTimeout(function () { nada(700 + i * 180, 0.14, 'triangle', 0, 0.09); }, 250 + i * 300); } });
+    [].forEach.call(s.children, function (b, i) { if (i < n) { b.style.animationDelay = (0.25 + i * 0.3) + 's'; b.classList.add('muncul'); setTimeout(function () { JP.bunyi.bintang(i); }, 250 + i * 300); } });
     return s;
-  }
-  var IKON_SUARA = ['<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 010 7"/></svg>', '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>'];
-  var IKON_MUSIK = ['<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg>', '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/><path d="M3 3l18 18"/></svg>'];
-  /* dua tombol: musik latar dan efek bunyi */
-  function tombolSuara() {
-    var tm = el('button', { 'class': 'pill', type: 'button', 'aria-pressed': data.musik ? 'true' : 'false', 'aria-label': 'Musik latar', title: 'Musik latar', html: IKON_MUSIK[data.musik ? 0 : 1], onclick: function () { data.musik = !data.musik; simpan(); tm.innerHTML = IKON_MUSIK[data.musik ? 0 : 1]; tm.setAttribute('aria-pressed', data.musik ? 'true' : 'false'); if (data.musik) { musikMulai(); } else { musikHenti(); } } });
-    var ts = el('button', { 'class': 'pill', type: 'button', 'aria-pressed': data.suara ? 'true' : 'false', 'aria-label': 'Efek bunyi', title: 'Efek bunyi', html: IKON_SUARA[data.suara ? 0 : 1], onclick: function () { data.suara = !data.suara; simpan(); ts.innerHTML = IKON_SUARA[data.suara ? 0 : 1]; ts.setAttribute('aria-pressed', data.suara ? 'true' : 'false'); if (data.suara) { bunyi.ketuk(); } } });
-    return [tm, ts];
   }
   function kepala(aktif, dasar) {
     dasar = dasar || '../';
     var link = function (h, t, id) { return el('a', { href: dasar + h, text: t, 'aria-current': aktif === id ? 'page' : null }); };
     return el('header', { 'class': 'bar noprint' }, [
       el('a', { 'class': 'brand', href: dasar }, [el('span', { 'class': 'logo', html: IKON.logo }), 'Jelajah Pencernaan']),
-      el('nav', { 'class': 'nav', 'aria-label': 'Navigasi situs' }, [link('', 'Beranda', 'beranda'), link('belajar/', 'Belajar', 'belajar'), link('asesmen/', 'Asesmen', 'asesmen')].concat(tombolSuara()))
+      el('nav', { 'class': 'nav', 'aria-label': 'Navigasi situs' }, [link('', 'Beranda', 'beranda'), link('belajar/', 'Belajar', 'belajar'), link('asesmen/', 'Asesmen', 'asesmen')].concat(JP.tombolSuara ? JP.tombolSuara() : []))
     ]);
   }
   var embed = /[?&]embed=1/.test(location.search);
   if (!embed) {
     try { latar(); } catch (e) { /* latar polos */ }
-    /* peramban hanya mengizinkan suara setelah ada sentuhan pertama */
-    var picu = function () { removeEventListener('pointerdown', picu); removeEventListener('keydown', picu); musikMulai(); };
-    addEventListener('pointerdown', picu); addEventListener('keydown', picu);
-    document.addEventListener('visibilitychange', function () { if (document.hidden) { musikHenti(); } else if (data.musik && ctx) { musikMulai(); } });
+    /* transisi halus saat pindah halaman */
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href]');
+      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || a.target || a.hasAttribute('download')) { return; }
+      var u = new URL(a.href, location.href); if (u.origin !== location.origin || (u.pathname === location.pathname && u.hash)) { return; }
+      e.preventDefault(); JP.bunyi.wus(); document.body.classList.add('keluar');
+      setTimeout(function () { location.href = a.href; }, 230);
+    });
+    addEventListener('pageshow', function () { document.body.classList.remove('keluar'); });
   }
-  window.JP = { tombolSuara: tombolSuara, data: data, simpan: simpan, catat: catat, el: el, acak: acak, bunyi: bunyi, bintang: bintang, bintangMuncul: bintangMuncul, konfeti: konfeti, medali: medali, pangkat: pangkat, LENCANA: LENCANA, nasi: nasi, kepala: kepala, IKON: IKON,
+  /* naik tingkat: dirayakan sekali saat poin melewati batas tingkat berikutnya */
+  function cekNaik() {
+    var p = pangkat(), lalu = data.tingkat || 1;
+    if (p.tingkat > lalu) {
+      data.tingkat = p.tingkat; simpan();
+      setTimeout(function () { JP.bunyi.naikLevel(); konfeti(90); toast('Naik ke Tingkat ' + p.tingkat + ': ' + p.nama + '!', 3600); }, 1400);
+      return true;
+    }
+    if (!data.tingkat) { data.tingkat = p.tingkat; simpan(); }
+    return false;
+  }
+  window.JP = { toast: toast, cekNaik: cekNaik, data: data, simpan: simpan, catat: catat, el: el, acak: acak, bunyi: bunyi, bintang: bintang, bintangMuncul: bintangMuncul, konfeti: konfeti, medali: medali, pangkat: pangkat, LENCANA: LENCANA, nasi: nasi, kepala: kepala, IKON: IKON,
     embed: embed,
     /* pemain baru: progres dikosongkan, riwayat untuk rekap guru tetap ada */
-    gantiPemain: function () { data.nama = ''; data.diag = null; data.pos = {}; data.ujian = null; simpan(); },
+    gantiPemain: function () { data.nama = ''; data.diag = null; data.pos = {}; data.ujian = null; data.tingkat = 0; simpan(); },
     hapusRiwayat: function () { data.riwayat = []; simpan(); } };
 })();

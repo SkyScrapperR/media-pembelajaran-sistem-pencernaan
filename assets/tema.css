@@ -169,3 +169,31 @@ th { background: rgba(255, 255, 255, 0.06); font-weight: 600; }
 .rute .n.ok { background: var(--sun); color: #1b1410; }
 @media (max-width: 560px) { .menu .maskot .ucap { display: none; } .pintu { min-height: 0; } }
 @media print { .latar { display: none; } }
+/* ---------- panel suara, tombol baca, toast, transisi ---------- */
+.tsuara { position: relative; gap: 4px; }
+.tsuara .eq { display: none; align-items: flex-end; gap: 2px; height: 14px; }
+.tsuara .eq i { width: 3px; border-radius: 2px; background: currentColor; animation: eq .9s ease-in-out infinite; }
+.tsuara .eq i:nth-child(2) { animation-delay: -.3s; } .tsuara .eq i:nth-child(3) { animation-delay: -.6s; }
+.tsuara.main .eq { display: inline-flex; } .tsuara.main { border-color: var(--teal); background: var(--teal-soft); }
+@keyframes eq { 0%, 100% { height: 4px; } 50% { height: 14px; } }
+.popsuara { position: fixed; z-index: 90; width: min(330px, calc(100vw - 24px)); max-height: calc(100vh - 90px); overflow: auto; display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 20px; background: rgba(20, 34, 44, 0.97); border: 1px solid var(--edge); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); animation: pop .25s ease both; }
+.saklar { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 600; cursor: pointer; }
+.saklar input { appearance: none; -webkit-appearance: none; width: 46px; height: 26px; border-radius: 999px; background: rgba(255, 255, 255, 0.15); position: relative; cursor: pointer; transition: background .2s ease; flex: none; }
+.saklar input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s ease; }
+.saklar input:checked { background: var(--teal); } .saklar input:checked::after { transform: translateX(20px); }
+.lagu { display: flex; flex-direction: column; align-items: flex-start; gap: 0; text-align: left; padding: 8px 12px; border-radius: 12px; border: 1.5px solid var(--edge); background: rgba(255, 255, 255, 0.03); }
+.lagu:hover { border-color: var(--teal); } .lagu.pilih { border-color: var(--accent); background: rgba(255, 106, 77, 0.14); }
+.lagu.pilih b::before { content: "♪ "; color: var(--accent); }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.baca { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--teal); background: var(--teal-soft); color: var(--teal); font-weight: 600; font-size: 14px; flex: none; }
+.baca.aktif { background: var(--teal); color: #10232a; animation: denyut 1.6s ease-in-out infinite; }
+.toasts { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 95; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; width: max-content; max-width: calc(100vw - 24px); }
+.toast { background: #fffdf7; color: #12262d; font-weight: 600; padding: 10px 18px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); animation: pop .3s cubic-bezier(.2, .9, .3, 1.2) both; text-align: center; transition: opacity .35s ease, transform .35s ease; }
+.toast.hilang { opacity: 0; transform: translateY(10px); }
+body > #app, body > main { transition: opacity .22s ease, transform .22s ease; }
+body.keluar > #app, body.keluar > main { opacity: 0; transform: translateY(-8px) scale(.99); }
+.nasi-klik { cursor: pointer; border: 0; background: none; padding: 0; }
+@keyframes lompat { 0%, 100% { transform: translateY(0) scale(1); } 30% { transform: translateY(-26px) scale(1.06, .94); } 55% { transform: translateY(0) scale(1.1, .88); } 75% { transform: translateY(-6px); } }
+.lompat { animation: lompat .7s cubic-bezier(.3, .7, .4, 1) both !important; }
+.angka-besar { font-family: var(--font-display); font-size: 84px; line-height: 1; color: var(--sun); font-variant-numeric: tabular-nums; }
+@media print { .toasts, .popsuara, .baca { display: none !important; } }
