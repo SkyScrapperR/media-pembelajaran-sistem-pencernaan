@@ -1,70 +1,49 @@
-/* Beranda: pintu masuk ke media belajar (Proyek 1) dan asesmen (Proyek 2) */
+/* Beranda: layar menu utama, pintu ke media belajar (Proyek 1) dan asesmen (Proyek 2) */
 (function () {
   'use strict';
   var el = JP.el, d = JP.data, pk = JP.pangkat();
   var posSelesai = 0, bintang = 0;
   Object.keys(d.pos).forEach(function (k) { bintang += d.pos[k].bintang || 0; if (d.pos[k].bintang > 0) { posSelesai++; } });
-  function ico(path) { return el('span', { 'class': 'ico', html: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>' }); }
-  var langkah = [
-    ['Cek Bekal', 'Jawab 6 pertanyaan pembuka supaya tahu apa yang sudah dan belum kamu pahami.', 'asesmen/cek-bekal.html', d.diag ? 'Sudah dikerjakan' : 'Belum dikerjakan', !!d.diag],
-    ['Belajar', 'Jelajahi tubuh 3D dan ikuti perjalanan sesuap nasi melewati 6 organ.', 'belajar/', 'Media 3D', false],
-    ['Pos Pemeriksaan', 'Mainkan 6 permainan pendek untuk menguji pemahamanmu sambil belajar.', 'asesmen/', posSelesai + ' dari 6 pos selesai', posSelesai === 6],
-    ['Ujian Akhir', 'Tuntaskan 15 soal dan raih sertifikat Penjelajah Pencernaan.', 'asesmen/ujian.html', d.ujian ? 'Nilai terbaik ' + d.ujian.nilai : 'Belum dikerjakan', !!d.ujian]
+  function hias(path) { return el('span', { 'class': 'hias', html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>' }); }
+  var rute = [
+    ['Cek Bekal', 'asesmen/cek-bekal.html', !!d.diag],
+    ['Belajar', 'belajar/', false],
+    ['Pos Pemeriksaan', 'asesmen/', posSelesai === 6],
+    ['Ujian Akhir', 'asesmen/ujian.html', !!d.ujian]
   ];
-  var peta = JP_jalur(0);
-  var hero = el('section', { 'class': 'hero' }, [
-    el('span', { 'class': 'gelembung', style: 'width:90px;height:90px;right:38%;top:-30px' }),
-    el('span', { 'class': 'gelembung', style: 'width:46px;height:46px;left:6%;bottom:12px;animation-delay:-3s' }),
-    el('span', { 'class': 'gelembung', style: 'width:28px;height:28px;right:6%;bottom:30px;animation-delay:-6s' }),
-    el('div', { 'class': 'stack', style: 'position:relative' }, [
-      el('p', { 'class': 'kicker', text: 'IPAS Kelas 5 SD · Fase C · Sistem Pencernaan Manusia' }),
-      el('h1', { html: 'Jelajah <span>Pencernaan</span>' }),
-      el('p', { 'class': 'lead', style: 'font-size:18px', text: d.nama ? 'Halo lagi, ' + d.nama + '! Si Nasi siap melanjutkan perjalanan bersamamu.' : 'Lihat ke dalam tubuh manusia, ikuti perjalanan sesuap nasi, lalu buktikan pemahamanmu lewat permainan.' }),
-      el('div', { 'class': 'row' }, [
-        el('a', { 'class': 'btn primary', href: 'belajar/', text: 'Mulai belajar' }),
-        el('a', { 'class': 'btn teal', href: 'asesmen/', text: 'Buka asesmen' })
-      ]),
-      el('div', { 'class': 'statbar' }, [
-        el('div', { 'class': 'stat' }, [el('b', { text: 'Lv ' + pk.tingkat }), el('span', { text: pk.nama })]),
-        el('div', { 'class': 'stat' }, [el('b', { text: bintang + '/18' }), el('span', { text: 'Bintang pos' })]),
-        el('div', { 'class': 'stat' }, [el('b', { text: d.ujian ? String(d.ujian.nilai) : '–' }), el('span', { text: 'Nilai ujian terbaik' })])
-      ])
+  var sapa = d.nama ? 'Halo lagi, ' + d.nama + '! Kamu sudah Tingkat ' + pk.tingkat + '. Lanjut, yuk!' : 'Halo! Aku Si Nasi. Temani aku menjelajah perut, yuk!';
+  document.getElementById('app').appendChild(el('main', { 'class': 'menu' }, [
+    el('div', { 'class': 'atas' }, [
+      el('span', { 'class': 'badge', text: 'IPAS Kelas 5 SD · Fase C' }),
+      el('div', { 'class': 'nav' }, JP.tombolSuara())
     ]),
-    el('div', { 'class': 'sosok', 'aria-hidden': 'true' }, peta)
-  ]);
-  document.getElementById('app').appendChild(el('div', { 'class': 'wrap' }, [
-    JP.kepala('beranda', ''),
-    hero,
-    el('section', { 'class': 'grid2' }, [
-      el('a', { 'class': 'tile hot', href: 'belajar/' }, [
-        ico('<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>'),
+    el('div', { 'class': 'maskot' }, [el('span', { 'class': 'ucap', text: sapa }), el('div', { 'class': 'bob' }, JP.nasi(110))]),
+    el('div', { 'class': 'stack', style: 'gap:10px;align-items:center' }, [
+      el('h1', { 'class': 'judul', html: 'Jelajah <span>Pencernaan</span>' }),
+      el('p', { 'class': 'lead', style: 'font-size:clamp(15px,2.4vw,19px);color:#d5e6ea', text: 'Lihat ke dalam tubuh, ikuti perjalanan sesuap nasi, lalu buktikan pemahamanmu lewat permainan.' })
+    ]),
+    el('div', { 'class': 'portal' }, [
+      el('a', { 'class': 'pintu a', href: 'belajar/' }, [
+        hias('<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>'),
+        el('span', { 'class': 'tag', text: 'Media 3D interaktif' }),
         el('h2', { text: 'Belajar' }),
-        el('p', { 'class': 'muted', text: 'Media pembelajaran 3D interaktif: Organ apa ini?, Jelajah Tubuh, dan Perjalanan Nasi dengan narasi suara.' }),
-        el('span', { 'class': 'badge', text: 'Media Pembelajaran Digital Interaktif' })
+        el('p', { text: 'Putar tubuh 3D, kenali 9 organ, dan ikuti Perjalanan Nasi dengan narasi suara.' }),
+        el('span', { 'class': 'maju', text: 'Mulai belajar →' })
       ]),
-      el('a', { 'class': 'tile', href: 'asesmen/' }, [
-        ico('<path d="M9 11l2 2 4-4"/><rect x="4" y="4" width="16" height="16" rx="3"/>'),
+      el('a', { 'class': 'pintu b', href: 'asesmen/' }, [
+        hias('<path d="M12 2.6l2.9 6 6.6.8-4.9 4.6 1.3 6.5-5.9-3.3-5.9 3.3 1.3-6.5L2.5 9.4l6.6-.8z"/>'),
+        el('span', { 'class': 'tag', text: 'Peta petualangan' }),
         el('h2', { text: 'Asesmen' }),
-        el('p', { 'class': 'muted', text: 'Tiga asesmen berbentuk permainan: Cek Bekal (diagnostik), Pos Pemeriksaan (formatif), dan Ujian Akhir (sumatif).' }),
-        el('span', { 'class': 'badge', text: 'Aplikasi Asesmen Digital' })
+        el('p', { text: d.nama ? bintang + ' dari 18 bintang terkumpul' + (d.ujian ? ', nilai ujian terbaik ' + d.ujian.nilai : '') + '. Lanjutkan petualanganmu.' : 'Delapan permainan: Cek Bekal, enam Pos Pemeriksaan, dan Ujian Akhir.' }),
+        el('span', { 'class': 'maju', text: (d.nama ? 'Lanjut bermain' : 'Mulai bermain') + ' →' })
       ])
     ]),
-    el('section', { 'class': 'panel stack' }, [
-      el('h2', { text: 'Alur penjelajahan' }),
-      el('ol', { 'class': 'stack', style: 'margin:0;padding:0;list-style:none' }, langkah.map(function (l, i) {
-        return el('li', {}, el('a', { href: l[2], 'class': 'row', style: 'text-decoration:none;color:inherit;align-items:flex-start;flex-wrap:nowrap' }, [
-          el('span', { 'class': 'logo', style: 'box-shadow:none;font-family:var(--font-display);font-weight:700;color:' + (l[4] ? '#1b1410;background:var(--sun)' : '#fff'), text: l[4] ? '✓' : String(i + 1) }),
-          el('span', { 'class': 'stack', style: 'gap:2px;min-width:0' }, [el('b', { text: l[0] }), el('span', { 'class': 'muted small', text: l[1] }), el('span', { 'class': 'badge' + (l[4] ? ' good' : ''), style: 'align-self:flex-start', text: l[3] })])
-        ]));
-      }))
-    ]),
-    el('footer', { 'class': 'stack small muted' }, [
-      el('p', { text: 'Dikembangkan oleh I Wayan Bagus Somabawa, PGSD Universitas Pendidikan Ganesha, untuk mata kuliah Teknologi Baru dalam Pengajaran dan Pembelajaran.' }),
-      el('p', {}, [el('a', { href: 'asesmen/guru.html', text: 'Halaman guru: kisi-kisi, kunci jawaban, dan rekap hasil' })])
+    el('ol', { 'class': 'rute', 'aria-label': 'Alur penjelajahan' }, rute.map(function (r, i) {
+      return el('li', {}, el('a', { href: r[1] }, [el('span', { 'class': 'n' + (r[2] ? ' ok' : ''), text: r[2] ? '✓' : String(i + 1) }), r[0]]));
+    })),
+    el('footer', { 'class': 'stack small', style: 'gap:4px;color:#b9cdd2;margin-top:auto' }, [
+      el('p', { text: 'Dikembangkan oleh I Wayan Bagus Somabawa · PGSD Universitas Pendidikan Ganesha' }),
+      el('p', {}, el('a', { href: 'asesmen/guru.html', text: 'Halaman guru' }))
     ])
   ]));
-  /* Si Nasi berjalan terus di sepanjang saluran pencernaan */
-  var diam = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, t0 = null;
-  function putar(t) { if (t0 === null) { t0 = t; } peta.pecahan(((t - t0) / 16000) % 1); if (!document.hidden) { requestAnimationFrame(putar); } else { setTimeout(function () { requestAnimationFrame(putar); }, 600); } }
-  try { if (diam) { peta.pecahan(0.42); } else { requestAnimationFrame(putar); } } catch (e) { /* gambar tetap tampil tanpa animasi */ }
 })();
