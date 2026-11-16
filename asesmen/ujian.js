@@ -16,7 +16,7 @@
         el('li', { text: 'Kamu boleh kembali ke soal sebelumnya sebelum menekan Selesai.' }),
         el('li', { text: 'Raih nilai ' + S.KKTP + ' ke atas untuk mendapat sertifikat.' })
       ]),
-      el('button', { 'class': 'btn primary', type: 'button', text: 'Mulai ujian', onclick: function () { JP.bunyi.ketuk(); mulai(); } })
+      el('button', { 'class': 'btn primary', type: 'button', text: 'Mulai ujian', onclick: function () { JP.bunyi.ketuk(); mulai(); setTimeout(function () { JP_pandu.mulai('ujian', PANDU); }, 500); } })
     ])]);
   }
   function mulai() {
@@ -180,4 +180,12 @@
     ]);
   }
   awal();
+  var PANDU = [
+    { sel: '.panel h2', judul: 'Soal ujian', teks: 'Baca baik-baik. Jawabanmu baru dibahas setelah semua soal selesai.' },
+    { sel: '.baca', judul: 'Bisa didengarkan', teks: 'Ketuk tombol ini kalau ingin soalnya dibacakan.', bulat: true },
+    { sel: '.panel > .row:last-child', judul: 'Maju dan mundur', teks: 'Lanjut ke soal berikutnya, atau kembali ke soal sebelumnya untuk mengubah jawaban.' },
+    { sel: '.petaSisi', judul: 'Perjalanan Si Nasi', teks: 'Setiap soal yang kamu lewati membuatku maju satu langkah di saluran pencernaan.' },
+    { sel: '.hud', judul: 'Nomor dan skor', teks: 'Di sini terlihat soal ke berapa dan berapa skor soal ini. Semangat!' }
+  ];
+  JP.bantu = function () { if (document.querySelector('.petaSisi')) { JP_pandu.mulai('ujian', PANDU, { paksa: true }); } else { JP.toast('Panduan muncul saat ujian dimulai.'); } };
 })();

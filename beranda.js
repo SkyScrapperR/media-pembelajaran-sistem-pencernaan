@@ -31,7 +31,7 @@
   document.getElementById('app').appendChild(el('main', { 'class': 'menu' }, [
     el('div', { 'class': 'atas' }, [
       el('span', { 'class': 'badge', text: 'IPAS Kelas 5 SD · Fase C' }),
-      el('div', { 'class': 'nav' }, JP.tombolSuara())
+      el('div', { 'class': 'nav' }, JP.tombolSuara().concat([JP_pandu.tombol(function () { pandu(true); }, 'Tampilkan panduan')]))
     ]),
     el('div', { 'class': 'maskot' }, [ucap, el('div', { 'class': 'bob' }, tombolNasi)]),
     el('div', { 'class': 'stack', style: 'gap:10px;align-items:center' }, [
@@ -57,9 +57,24 @@
     ])
   ]));
 
+  /* panduan pengenalan: otomatis untuk pengunjung baru, bisa diulang lewat tombol tanda tanya */
+  function pandu(paksa) {
+    JP_pandu.mulai('beranda', [
+      { judul: 'Selamat datang!', teks: 'Aku Si Nasi. Sebentar saja, aku tunjukkan cara memakai Jelajah Pencernaan, ya.' },
+      { sel: '.nasi-klik', judul: 'Ini aku!', teks: 'Ketuk aku kapan saja. Aku akan melompat dan mengatakan sesuatu.', bulat: true },
+      { sel: '.pintu.a', judul: 'Pintu Belajar', teks: 'Mulai dari sini. Kamu bisa memutar tubuh 3D, mengenal 9 organ, dan mengikuti Perjalanan Nasi.' },
+      { sel: '.pintu.b', judul: 'Pintu Asesmen', teks: 'Di sini ada peta petualangan: Cek Bekal, enam Pos Pemeriksaan, dan Ujian Akhir.' },
+      { sel: '.pintu.c', judul: 'Arena bonus', teks: 'Mau bersantai? Mainkan Basmi Kuman. Permainan ini tidak dinilai.' },
+      { sel: '.parade', judul: 'Para penjaga pos', teks: 'Ketuk tokohnya untuk berkenalan. Mereka menunggumu di setiap pos.' },
+      { sel: '.rute', judul: 'Urutan yang disarankan', teks: 'Cek Bekal dulu, lalu Belajar, lanjut Pos Pemeriksaan, dan terakhir Ujian Akhir.' },
+      { sel: '.tsuara', judul: 'Suara dan musik', teks: 'Ganti lagu, atur volume, atau matikan suara lewat tombol ini.', bulat: true },
+      { sel: '.pd-bantu', judul: 'Butuh bantuan lagi?', teks: 'Ketuk tanda tanya ini kapan saja untuk mengulang panduan. Selamat menjelajah!', bulat: true }
+    ], { paksa: paksa, akhir: 'Ayo mulai!' });
+  }
+  JP.bantu = function () { pandu(true); };
   /* layar pembuka: tampil sekali setiap kunjungan, sentuhan pertama juga menyalakan musik */
   var sudah = false; try { sudah = sessionStorage.getItem('jp-pembuka') === '1'; } catch (e) { /* abaikan */ }
-  if (sudah) { setTimeout(function () { ketik(sapa); }, 500); return; }
+  if (sudah) { setTimeout(function () { ketik(sapa); pandu(false); }, 700); return; }
   function huruf(kata, mulai) { return kata.split('').map(function (h, i) { return '<i style="animation-delay:' + (mulai + i * 0.06).toFixed(2) + 's">' + h + '</i>'; }).join(''); }
   var baris = el('div', { 'class': 'baris-tokoh' }, ['gigo', 'kero', 'lambu'].map(function (id, i) { var t = JP.tokoh(id, 62); t.style.animationDelay = (1.2 + i * 0.12) + 's, ' + (-i * 0.5) + 's'; return t; })
     .concat([el('span', { 'class': 'bintang-utama' }, JP.nasi(150, 'tawa'))])
@@ -74,6 +89,7 @@
     try { sessionStorage.setItem('jp-pembuka', '1'); } catch (e) { /* abaikan */ }
     JP.bunyi.menang(); JP.konfeti(70); pembuka.classList.add('hilang');
     setTimeout(function () { pembuka.remove(); ketik(sapa); }, 650);
+    setTimeout(function () { pandu(false); }, 2300);
   });
   document.body.appendChild(pembuka); pembuka.focus();
 })();

@@ -27,11 +27,28 @@
       el('div', { 'class': 'row' }, el('button', { 'class': 'btn primary', type: 'button', text: 'Mulai', onclick: function () { JP.audio.henti(); JP.bunyi.ketuk(); main(); } }))
     ])]);
   }
+  var PETUNJUK_MAIN = {
+    pilah: [{ sel: '.card-big', judul: 'Geser kartunya', teks: 'Seret kartu ini ke kiri atau ke kanan. Kalau lebih suka, pakai dua tombol di bawahnya.' }, { sel: '.hud', judul: 'Pantau hasilmu', teks: 'Di sini terlihat kartu ke berapa dan berapa yang sudah tepat. Jawaban beruntun memberi bunyi kombo!' }],
+    rute: [{ sel: '.chips', judul: 'Ketuk sesuai urutan', teks: 'Ketuk nama organ mulai dari yang pertama dilewati makanan. Awas, ada organ jebakan.' }, { sel: '.slot.next', judul: 'Rute tersusun di sini', teks: 'Organ yang benar akan mengisi kotak ini satu per satu.' }],
+    tebak: [{ sel: '.panel ol', judul: 'Baca petunjuknya', teks: 'Tebak dari petunjuk pertama untuk 3 poin. Membuka petunjuk lain mengurangi poin.' }, { sel: '.chips', judul: 'Pilih jawabanmu', teks: 'Ketuk nama organ yang menurutmu benar.' }],
+    jodoh: [{ sel: '.panel > div:nth-of-type(2)', judul: 'Pasangkan', teks: 'Ketuk satu nama di kiri, lalu ketuk tugasnya di kanan. Pasangan yang cocok berubah hijau.' }],
+    tunjuk: [{ sel: '.panel h2', judul: 'Baca peristiwanya', teks: 'Setiap soal menceritakan apa yang terjadi di satu organ.' }, { sel: '.peta', judul: 'Ketuk organnya', teks: 'Ketuk organ yang tepat pada gambar tubuh. Benar di ketukan pertama memberi 2 poin.' }]
+  };
   function main() {
     arena = el('section', { 'class': 'panel stack' });
     bingkai([judul(), arena]);
     MAIN[pos.jenis]();
+    setTimeout(function () { JP_pandu.mulai('main-' + pos.jenis, PETUNJUK_MAIN[pos.jenis], { akhir: 'Main!' }); }, 450);
   }
+  JP.bantu = function () {
+    if (document.querySelector('.dialog')) { JP_pandu.mulai('pos-awal', PANDU_AWAL, { paksa: true }); }
+    else if (arena && arena.isConnected) { JP_pandu.mulai('main-' + pos.jenis, PETUNJUK_MAIN[pos.jenis], { paksa: true, akhir: 'Main!' }); }
+  };
+  var PANDU_AWAL = [
+    { sel: '.dialog', judul: 'Penjaga pos', teks: 'Setiap pos punya penjaga yang menjelaskan cara bermainnya. Baca dulu, ya.' },
+    { sel: '.baca', judul: 'Bisa didengarkan', teks: 'Ketuk tombol ini kalau ingin petunjuknya dibacakan.', bulat: true },
+    { sel: '.btn.primary', judul: 'Siap bermain?', teks: 'Ketuk Mulai. Kamu boleh mengulang permainan kapan saja untuk menambah bintang.', bulat: true }
+  ];
   /* skor: 0..1, pesan: catatan singkat untuk siswa */
   function selesai(skor, pesan) {
     var persen = Math.round(skor * 100), b = persen >= 90 ? 3 : persen >= 70 ? 2 : persen >= 50 ? 1 : 0;
@@ -189,4 +206,5 @@
     }
   };
   awal();
+  if (!JP.embed) { setTimeout(function () { JP_pandu.mulai('pos-awal', PANDU_AWAL); }, 700); }
 })();

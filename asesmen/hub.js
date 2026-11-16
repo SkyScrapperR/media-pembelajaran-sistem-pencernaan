@@ -74,4 +74,19 @@
     ]));
   }
   gambar();
+  function pandu(paksa) {
+    JP_pandu.mulai('peta', [
+      { judul: 'Ini peta petualanganmu', teks: 'Semua permainan asesmen ada di halaman ini. Yuk, aku tunjukkan satu per satu.' },
+      { sel: 'form input[name=nama]', judul: 'Tulis namamu', teks: 'Namamu dipakai di sertifikat dan rekap guru. Isi dulu sebelum bermain.' },
+      { sel: '.level', judul: 'Tingkatmu', teks: 'Setiap bintang dan nilai menambah poin. Kumpulkan poin untuk naik tingkat sampai jadi Profesor Pencernaan.' },
+      { sel: '.trail li:nth-child(1) .node', judul: '1. Cek Bekal', teks: 'Mulai dari sini. Enam pertanyaan pembuka tanpa nilai, supaya tahu apa yang perlu kamu pelajari.' },
+      { sel: '.trail li:nth-child(2) .node', judul: '2. Pos Pemeriksaan', teks: 'Ada enam pos, masing-masing satu permainan. Kamu langsung tahu benar atau salah, dan boleh mengulang.' },
+      { sel: '.node.bos', judul: '3. Ujian Akhir', teks: 'Lima belas soal dengan nilai 0 sampai 100. Raih 75 ke atas untuk mendapat sertifikat.' },
+      { sel: '.pintu.c', judul: 'Arena bonus', teks: 'Basmi Kuman untuk bersenang-senang. Tidak memengaruhi nilai.' },
+      { sel: '.medali', judul: 'Rak lencana', teks: 'Setiap pos yang selesai memberi satu lencana. Bisakah kamu mengumpulkan semuanya?' },
+      { sel: '.pd-bantu', judul: 'Ulangi panduan', teks: 'Ketuk tanda tanya ini kalau ingin melihat panduan lagi.', bulat: true }
+    ], { paksa: paksa, akhir: 'Mengerti!' });
+  }
+  JP.bantu = function () { pandu(true); };
+  setTimeout(function () { pandu(false); }, 900);
 })();

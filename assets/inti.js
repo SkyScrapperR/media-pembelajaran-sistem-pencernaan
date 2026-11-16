@@ -129,12 +129,20 @@
     [].forEach.call(s.children, function (b, i) { if (i < n) { b.style.animationDelay = (0.25 + i * 0.3) + 's'; b.classList.add('muncul'); setTimeout(function () { JP.bunyi.bintang(i); }, 250 + i * 300); } });
     return s;
   }
+  /* panduan bawaan bila halaman tidak punya panduan sendiri */
+  function bantuUmum() {
+    JP_pandu.mulai('umum', [
+      { sel: '.bar .brand', judul: 'Kembali ke beranda', teks: 'Ketuk nama Jelajah Pencernaan kapan saja untuk kembali ke layar utama.' },
+      { sel: '.bar .nav', judul: 'Pindah halaman', teks: 'Beranda untuk layar utama, Belajar untuk tubuh 3D, dan Asesmen untuk peta permainan.' },
+      { sel: '.tsuara', judul: 'Suara dan musik', teks: 'Pilih lagu, atur volume, atau matikan musik, efek bunyi, dan suara Si Nasi di sini.', bulat: true }
+    ], { paksa: true });
+  }
   function kepala(aktif, dasar) {
     dasar = dasar || '../';
     var link = function (h, t, id) { return el('a', { href: dasar + h, text: t, 'aria-current': aktif === id ? 'page' : null }); };
     return el('header', { 'class': 'bar noprint' }, [
       el('a', { 'class': 'brand', href: dasar }, [el('span', { 'class': 'logo', html: IKON.logo }), 'Jelajah Pencernaan']),
-      el('nav', { 'class': 'nav', 'aria-label': 'Navigasi situs' }, [link('', 'Beranda', 'beranda'), link('belajar/', 'Belajar', 'belajar'), link('asesmen/', 'Asesmen', 'asesmen')].concat(JP.tombolSuara ? JP.tombolSuara() : []))
+      el('nav', { 'class': 'nav', 'aria-label': 'Navigasi situs' }, [link('', 'Beranda', 'beranda'), link('belajar/', 'Belajar', 'belajar'), link('asesmen/', 'Asesmen', 'asesmen')].concat(JP.tombolSuara ? JP.tombolSuara() : []).concat(window.JP_pandu ? [JP_pandu.tombol(function () { (JP.bantu || bantuUmum)(); })] : []))
     ]);
   }
   var embed = /[?&]embed=1/.test(location.search);

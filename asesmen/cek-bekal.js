@@ -17,7 +17,7 @@
       el('p', { 'class': 'kicker', text: 'Asesmen diagnostik' }),
       el('h1', { text: 'Cek Bekal' }),
       el('p', { 'class': 'lead', text: 'Sebelum menjelajah, Si Nasi ingin tahu bekal pengetahuanmu. Ada 6 pertanyaan. Tidak ada nilai dan tidak ada yang dimarahi, jadi jawab sejujurnya. Setelah menjawab, pilih seberapa yakin kamu.' }),
-      el('button', { 'class': 'btn primary', type: 'button', text: 'Mulai', onclick: function () { JP.bunyi.ketuk(); mulai(); } })
+      el('button', { 'class': 'btn primary', type: 'button', text: 'Mulai', onclick: function () { JP.bunyi.ketuk(); mulai(); setTimeout(function () { JP_pandu.mulai('cek-bekal', PANDU); }, 500); } })
     ])]);
   }
   function tanya() {
@@ -82,4 +82,11 @@
     ]);
   }
   awal();
+  var PANDU = [
+    { sel: '.panel h2', judul: 'Baca pertanyaannya', teks: 'Tidak ada nilai di Cek Bekal, jadi jawab sejujurnya.' },
+    { sel: '.baca', judul: 'Bisa didengarkan', teks: 'Ketuk tombol ini kalau ingin pertanyaannya dibacakan.', bulat: true },
+    { sel: '.panel .stack', judul: 'Pilih satu jawaban', teks: 'Setelah memilih, kamu akan ditanya seberapa yakin. Pilih yakin atau ragu-ragu dengan jujur.' },
+    { sel: '.hud', judul: 'Ransel bekal', teks: 'Setiap pertanyaan yang dijawab mengisi satu kotak ransel. Ada enam kotak.' }
+  ];
+  JP.bantu = function () { if (document.querySelector('.opt')) { JP_pandu.mulai('cek-bekal', PANDU, { paksa: true }); } else { JP.toast('Tekan Mulai dulu, nanti panduannya muncul.'); } };
 })();

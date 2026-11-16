@@ -21,6 +21,12 @@ Si Nasi sang penjelajah ditemani enam penjaga pos (Gigo, Kero, Lambu, Hali, Kolo
 Semua tokoh digambar dengan SVG di `assets/tokoh.js`. Arena bonus Basmi Kuman ada di `/asesmen/bonus.html`
 dan tidak dinilai.
 
+## Panduan pengenalan
+
+`assets/pandu.js` menampilkan panduan langkah demi langkah untuk pengguna baru: layar meredup, satu bagian disorot,
+dan Si Nasi menjelaskan fungsinya. Panduan muncul otomatis sekali di beranda, peta asesmen, awal pos, tiap jenis
+permainan, Cek Bekal, Ujian, dan tiap kegiatan media 3D. Tombol tanda tanya mengulang panduan kapan saja.
+
 ## Susunan file
 
 - `assets/` dipakai bersama: `tema.css` (tampilan), `inti.js` (penyimpan progres, bunyi), `soal.js` (bank soal), `peta.js` (gambar tubuh 2D).

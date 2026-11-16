@@ -74,4 +74,11 @@
     JP.bunyi.ketuk(); requestAnimationFrame(putar);
   }
   awal();
+  JP.bantu = function () {
+    JP_pandu.mulai('bonus', [
+      { sel: '.dialog', judul: 'Tugasmu', teks: 'Kamu menjadi asam lambung. Ketuk kuman hijau yang jatuh, tetapi biarkan makanan lewat.' },
+      { sel: '.arena', judul: 'Arena lambung', teks: 'Kuman yang lolos ke bawah atau makanan yang terketuk mengurangi satu nyawa. Bertahanlah 45 detik!' },
+      { sel: '.hud', judul: 'Nyawa, skor, dan waktu', teks: 'Membasmi kuman berturut-turut memberi poin kombo yang lebih besar.' }
+    ], { paksa: true });
+  };
 })();
