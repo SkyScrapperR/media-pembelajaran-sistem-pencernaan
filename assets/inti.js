@@ -2,13 +2,14 @@
 (function () {
   'use strict';
   var KEY = 'jelajah-pencernaan:v1';
-  var KOSONG = { nama: '', suara: true, musik: true, vokal: true, lagu: 'auto', volume: 0.85, tingkat: 0, bonus: 0, diag: null, pos: {}, ujian: null, riwayat: [] };
+  var KOSONG = { nama: '', suara: true, musik: true, vokal: true, lagu: 'auto', volume: 0.85, tingkat: 0, bonus: 0, diag: null, pos: {}, ujian: null, rekor: {}, avatar: '', riwayat: [] };
   function muat() {
     try { var r = JSON.parse(localStorage.getItem(KEY) || 'null'); if (r) { var d = {}; for (var k in KOSONG) { d[k] = r[k] !== undefined ? r[k] : KOSONG[k]; } return d; } } catch (e) { /* penyimpanan tidak tersedia */ }
     return JSON.parse(JSON.stringify(KOSONG));
   }
   var data = muat();
-  function simpan() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* hanya tersimpan selama halaman terbuka */ } }
+  /* diam = true dipakai saat memasang data dari server, supaya tidak dikirim balik */
+  function simpan(diam) { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* hanya tersimpan selama halaman terbuka */ } if (diam !== true && window.JP && JP.akun) { JP.akun.jadwal(); } }
   function catat(jenis, ringkas, nilai) {
     data.riwayat.push({ nama: data.nama || 'Tanpa nama', jenis: jenis, ringkas: ringkas, nilai: nilai, waktu: new Date().toISOString() });
     if (data.riwayat.length > 300) { data.riwayat = data.riwayat.slice(-300); }
@@ -175,6 +176,6 @@
   window.JP = { dasar: dasarSitus, toast: toast, cekNaik: cekNaik, data: data, simpan: simpan, catat: catat, el: el, acak: acak, bunyi: bunyi, bintang: bintang, bintangMuncul: bintangMuncul, konfeti: konfeti, medali: medali, pangkat: pangkat, LENCANA: LENCANA, nasi: nasi, kepala: kepala, IKON: IKON,
     embed: embed,
     /* pemain baru: progres dikosongkan, riwayat untuk rekap guru tetap ada */
-    gantiPemain: function () { data.nama = ''; data.diag = null; data.pos = {}; data.ujian = null; data.tingkat = 0; data.bonus = 0; simpan(); },
+    gantiPemain: function () { data.nama = ''; data.diag = null; data.pos = {}; data.ujian = null; data.tingkat = 0; data.bonus = 0; data.rekor = {}; data.avatar = ''; simpan(); },
     hapusRiwayat: function () { data.riwayat = []; simpan(); } };
 })();

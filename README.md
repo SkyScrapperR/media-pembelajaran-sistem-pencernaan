@@ -13,7 +13,7 @@ untuk IPAS kelas V SD (Fase C). Dibuat untuk mata kuliah Teknologi Baru dalam Pe
 | `/asesmen/cek-bekal.html` | Asesmen diagnostik: 6 soal dengan tingkat keyakinan |
 | `/asesmen/pos.html?pos=1..6` | Asesmen formatif: 6 permainan dengan umpan balik langsung |
 | `/asesmen/ujian.html` | Asesmen sumatif: 15 soal, nilai 0 sampai 100, pembahasan, sertifikat |
-| `/asesmen/guru.html` | Kisi-kisi, kunci jawaban, pedoman penskoran, rekap hasil |
+| `/asesmen/guru.html` | Dasbor kelas dari database, kisi-kisi, kunci jawaban, pedoman penskoran |
 | `/asesmen/bonus.html` | Arena bonus Basmi Kuman (tidak dinilai) |
 | `/kamus/` | Kamus Pencernaan: 33 istilah, bisa dicari dan didengarkan |
 
@@ -22,6 +22,20 @@ untuk IPAS kelas V SD (Fase C). Dibuat untuk mata kuliah Teknologi Baru dalam Pe
 Si Nasi sang penjelajah ditemani enam penjaga pos (Gigo, Kero, Lambu, Hali, Kolo, Tiha) dan Si Kuman.
 Semua tokoh digambar dengan SVG di `assets/tokoh.js`. Arena bonus Basmi Kuman ada di `/asesmen/bonus.html`
 dan tidak dinilai.
+
+## Akun siswa dan database kelas
+
+Siswa menekan **Masuk kelas** di Peta Petualangan, memilih kelas A, B, atau C, menulis nama, lalu memilih dua gambar rahasia.
+Satu nama hanya bisa dipakai satu anak di tiap kelas. Gambar rahasia dipakai untuk masuk lagi dari perangkat lain.
+Progres disimpan di perangkat dan dikirim ke server (`api/jp.js`, satu berkas JSON per siswa di Vercel Blob privat).
+Tanpa internet permainan tetap berjalan, dan hasilnya dikirim saat internet kembali.
+
+Halaman guru memeriksa kata sandi di server (variabel lingkungan `GURU_SANDI`), lalu menampilkan dasbor kelas:
+daftar siswa, ketercapaian tiap tujuan pembelajaran, lima butir ujian tersulit, peta miskonsepsi, dan unduhan CSV.
+Guru dapat mengatur ulang gambar rahasia siswa, menghapus siswa, atau menghapus data satu kelas.
+Yang disimpan hanya nama yang diketik siswa, kelas, dan hasil asesmennya.
+
+Variabel lingkungan server: `BLOB_READ_WRITE_TOKEN` (dari Vercel Blob), `GURU_SANDI`, `JP_RAHASIA`.
 
 ## Panduan pengenalan
 
@@ -52,7 +66,8 @@ Situs ini HTML, CSS, dan JavaScript biasa tanpa proses build. Jalankan server st
 python -m http.server 8000
 ```
 
-lalu buka `http://localhost:8000`. Hasil asesmen tersimpan di peramban perangkat (localStorage).
+lalu buka `http://localhost:8000`. Untuk mencoba akun siswa dan dasbor guru di laptop, jalankan `GURU_SANDI=coba node tools/dev.js`
+(data disimpan di folder sementara).
 
 ## Rekaman narasi
 

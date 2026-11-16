@@ -120,7 +120,7 @@
     var skor = soal.map(function (_, k) { return skorSoal(k); }), total = skor.reduce(function (a, b) { return a + b; }, 0);
     var perTP = S.TP.map(function (_, t) { var d = 0, m = 0; soal.forEach(function (s, k) { if (s.q.tp === t + 1) { d += skor[k]; m += s.q.skor; } }); return { dapat: d, maks: m }; });
     var lama = JP.data.ujian, tuntas = total >= S.KKTP, b = total >= 90 ? 3 : total >= S.KKTP ? 2 : total >= 60 ? 1 : 0;
-    JP.data.ujian = { nilai: Math.max(total, lama ? lama.nilai : 0), terakhir: total, waktu: new Date().toISOString(), perTP: perTP, coba: (lama ? lama.coba || 1 : 0) + 1 }; JP.simpan();
+    JP.data.ujian = { nilai: Math.max(total, lama ? lama.nilai : 0), terakhir: total, waktu: new Date().toISOString(), perTP: perTP, butir: soal.map(function (x, k) { return { id: x.q.id, tp: x.q.tp, dapat: skor[k], maks: x.q.skor }; }), coba: (lama ? lama.coba || 1 : 0) + 1 }; JP.simpan();
     JP.catat('Sumatif', S.predikat(total), total);
     /* angka nilai berputar naik dengan gulungan drum, lalu perayaan */
     var angka = el('p', { 'class': 'angka-besar', text: '0' });
