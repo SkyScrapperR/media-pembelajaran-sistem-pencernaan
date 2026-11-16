@@ -19,8 +19,10 @@
     ]);
   }
   function awal() {
+    var tk = JP.TOKOH[JP.TOKOH_POS[no - 1]];
     bingkai([judul(), el('section', { 'class': 'panel stack' }, [
-      el('div', { 'class': 'row', style: 'justify-content:space-between;flex-wrap:nowrap;align-items:flex-start' }, [el('p', { text: pos.petunjuk }), JP.audio.tombolBaca('pos-' + pos.no, S.teksPos(pos), 'Dengarkan petunjuk')]),
+      el('div', { 'class': 'dialog' }, [el('div', { 'class': 'bob' }, JP.tokoh(JP.TOKOH_POS[no - 1], 104, 'tawa')), el('p', { 'class': 'ucap' }, [el('b', { text: 'Halo, aku ' + tk.nama + ', penjaga Pos ' + no + '! ' }), pos.petunjuk])]),
+      el('div', { 'class': 'row' }, JP.audio.tombolBaca('pos-' + pos.no, S.teksPos(pos), 'Dengarkan petunjuk')),
       el('p', { 'class': 'small muted', text: 'Kamu langsung tahu benar atau salahnya. Kalau belum berhasil, boleh mencoba lagi.' }),
       el('div', { 'class': 'row' }, el('button', { 'class': 'btn primary', type: 'button', text: 'Mulai', onclick: function () { JP.audio.henti(); JP.bunyi.ketuk(); main(); } }))
     ])]);
@@ -43,7 +45,7 @@
       ? el('button', { 'class': 'btn primary', type: 'button', text: 'Kembali ke Perjalanan Nasi', onclick: function () { parent.postMessage('jp-pos-tutup', location.origin); } })
       : (no < 6 ? el('a', { 'class': 'btn primary', href: 'pos.html?pos=' + (no + 1), text: 'Pos berikutnya' }) : el('a', { 'class': 'btn primary', href: 'ujian.html', text: 'Lanjut ke Ujian Akhir' }));
     bingkai([judul(), el('section', { 'class': 'panel stack pop', style: 'align-items:center;text-align:center' }, [
-      el('div', { 'class': 'row', style: 'justify-content:center;align-items:flex-end;gap:14px' }, [el('div', { 'class': 'bob' }, JP.nasi(84, b > 0 ? 'senang' : 'sedih')), b > 0 ? el('div', { 'class': 'pop', style: 'animation-delay:.9s' }, JP.medali(no, LENCANA[no - 1])) : null]),
+      el('div', { 'class': 'row', style: 'justify-content:center;align-items:flex-end;gap:14px' }, [el('div', { 'class': 'bob' }, JP.nasi(84, b === 3 ? 'bangga' : b > 0 ? 'tawa' : 'sedih')), el('div', { 'class': 'bob', style: 'animation-delay:-1.2s' }, JP.tokoh(JP.TOKOH_POS[no - 1], 72, b > 0 ? 'tawa' : 'pikir')), b > 0 ? el('div', { 'class': 'pop', style: 'animation-delay:.9s' }, JP.medali(no, LENCANA[no - 1])) : null]),
       el('h2', { text: b === 3 ? 'Sempurna!' : b === 2 ? 'Hebat!' : b === 1 ? 'Berhasil!' : 'Hampir!' }),
       JP.bintangMuncul(b),
       el('p', { text: 'Ketepatanmu ' + persen + '%.' + (baru ? ' Lencana baru: ' + LENCANA[no - 1] + '!' : '') }),

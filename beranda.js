@@ -1,11 +1,10 @@
-/* Beranda: layar menu utama, pintu ke media belajar (Proyek 1) dan asesmen (Proyek 2) */
+/* Beranda: layar pembuka, lalu menu utama dengan tiga pintu dan perkenalan tokoh */
 (function () {
   'use strict';
   var el = JP.el, d = JP.data, pk = JP.pangkat();
   JP.audio.halaman('petualangan', 'ceria');
   var posSelesai = 0, bintang = 0;
   Object.keys(d.pos).forEach(function (k) { bintang += d.pos[k].bintang || 0; if (d.pos[k].bintang > 0) { posSelesai++; } });
-  function hias(path) { return el('span', { 'class': 'hias', html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>' }); }
   var rute = [
     ['Cek Bekal', 'asesmen/cek-bekal.html', !!d.diag],
     ['Belajar', 'belajar/', false],
@@ -22,9 +21,13 @@
   var tombolNasi = el('button', { 'class': 'nasi-klik', type: 'button', 'aria-label': 'Ketuk Si Nasi untuk mendengar ucapannya', onclick: function () {
     var n = tombolNasi.firstChild; n.classList.remove('lompat'); void n.offsetWidth; n.classList.add('lompat'); JP.bunyi.pop();
     var t = JP.audio.nasi('halo'); if (t) { ketik(t, !d.vokal); } else { ketik(JP_SOAL.NASI.halo[Math.floor(Math.random() * 4)], true); }
-  } }, JP.nasi(110));
+  } }, JP.nasi(120, 'tawa'));
   var sapa = d.nama ? 'Halo lagi, ' + d.nama + '! Kamu sudah Tingkat ' + pk.tingkat + '. Lanjut, yuk!' : 'Halo! Aku Si Nasi. Temani aku menjelajah perut, yuk!';
-  setTimeout(function () { ketik(sapa); }, 500);
+  function pintu(kelas, href, tag, judul, teks, ajak, tk) {
+    return el('a', { 'class': 'pintu ' + kelas, href: href }, [
+      el('span', { 'class': 'tag', text: tag }), el('h2', { text: judul }), el('p', { text: teks }), el('span', { 'class': 'maju', text: ajak + ' →' }), tk
+    ]);
+  }
   document.getElementById('app').appendChild(el('main', { 'class': 'menu' }, [
     el('div', { 'class': 'atas' }, [
       el('span', { 'class': 'badge', text: 'IPAS Kelas 5 SD · Fase C' }),
@@ -36,20 +39,14 @@
       el('p', { 'class': 'lead', style: 'font-size:clamp(15px,2.4vw,19px);color:#d5e6ea', text: 'Lihat ke dalam tubuh, ikuti perjalanan sesuap nasi, lalu buktikan pemahamanmu lewat permainan.' })
     ]),
     el('div', { 'class': 'portal' }, [
-      el('a', { 'class': 'pintu a', href: 'belajar/' }, [
-        hias('<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>'),
-        el('span', { 'class': 'tag', text: 'Media 3D interaktif' }),
-        el('h2', { text: 'Belajar' }),
-        el('p', { text: 'Putar tubuh 3D, kenali 9 organ, dan ikuti Perjalanan Nasi dengan narasi suara.' }),
-        el('span', { 'class': 'maju', text: 'Mulai belajar →' })
-      ]),
-      el('a', { 'class': 'pintu b', href: 'asesmen/' }, [
-        hias('<path d="M12 2.6l2.9 6 6.6.8-4.9 4.6 1.3 6.5-5.9-3.3-5.9 3.3 1.3-6.5L2.5 9.4l6.6-.8z"/>'),
-        el('span', { 'class': 'tag', text: 'Peta petualangan' }),
-        el('h2', { text: 'Asesmen' }),
-        el('p', { text: d.nama ? bintang + ' dari 18 bintang terkumpul' + (d.ujian ? ', nilai ujian terbaik ' + d.ujian.nilai : '') + '. Lanjutkan petualanganmu.' : 'Delapan permainan: Cek Bekal, enam Pos Pemeriksaan, dan Ujian Akhir.' }),
-        el('span', { 'class': 'maju', text: (d.nama ? 'Lanjut bermain' : 'Mulai bermain') + ' →' })
-      ])
+      pintu('a', 'belajar/', 'Media 3D interaktif', 'Belajar', 'Putar tubuh 3D, kenali 9 organ, dan ikuti Perjalanan Nasi.', 'Mulai belajar', JP.tokoh('lambu', 84, 'senang')),
+      pintu('b', 'asesmen/', 'Peta petualangan', 'Asesmen', d.nama ? bintang + ' dari 18 bintang' + (d.ujian ? ', nilai ujian ' + d.ujian.nilai : '') + '. Lanjutkan!' : 'Cek Bekal, enam Pos Pemeriksaan, dan Ujian Akhir.', d.nama ? 'Lanjut bermain' : 'Mulai bermain', JP.tokoh('gigo', 84, 'tawa')),
+      pintu('c', 'asesmen/bonus.html', 'Arena bonus', 'Basmi Kuman', d.bonus ? 'Rekormu ' + d.bonus + ' poin. Bisa lebih tinggi?' : 'Jadilah asam lambung dan basmi kuman yang menyerbu!', 'Main sekarang', JP.tokoh('kuman', 84, 'marah'))
+    ]),
+    el('section', { 'class': 'stack', style: 'gap:8px;align-items:center;width:100%' }, [
+      el('h2', { style: 'font-size:clamp(20px,3.6vw,26px)', text: 'Kenalan dengan para penjaga pos' }),
+      el('div', { 'class': 'parade' }, JP.TOKOH_POS.concat(['kuman']).map(function (id) { return JP.kartuTokoh(id, 66); })),
+      el('p', { 'class': 'small', style: 'color:#b9cdd2', text: 'Ketuk tokohnya untuk berkenalan.' })
     ]),
     el('ol', { 'class': 'rute', 'aria-label': 'Alur penjelajahan' }, rute.map(function (r, i) {
       return el('li', {}, el('a', { href: r[1] }, [el('span', { 'class': 'n' + (r[2] ? ' ok' : ''), text: r[2] ? '✓' : String(i + 1) }), r[0]]));
@@ -59,4 +56,24 @@
       el('p', {}, el('a', { href: 'asesmen/guru.html', text: 'Halaman guru' }))
     ])
   ]));
+
+  /* layar pembuka: tampil sekali setiap kunjungan, sentuhan pertama juga menyalakan musik */
+  var sudah = false; try { sudah = sessionStorage.getItem('jp-pembuka') === '1'; } catch (e) { /* abaikan */ }
+  if (sudah) { setTimeout(function () { ketik(sapa); }, 500); return; }
+  function huruf(kata, mulai) { return kata.split('').map(function (h, i) { return '<i style="animation-delay:' + (mulai + i * 0.06).toFixed(2) + 's">' + h + '</i>'; }).join(''); }
+  var baris = el('div', { 'class': 'baris-tokoh' }, ['gigo', 'kero', 'lambu'].map(function (id, i) { var t = JP.tokoh(id, 62); t.style.animationDelay = (1.2 + i * 0.12) + 's, ' + (-i * 0.5) + 's'; return t; })
+    .concat([el('span', { 'class': 'bintang-utama' }, JP.nasi(150, 'tawa'))])
+    .concat(['hali', 'kolo', 'tiha'].map(function (id, i) { var t = JP.tokoh(id, 62); t.style.animationDelay = (1.5 + i * 0.12) + 's, ' + (-i * 0.7) + 's'; return t; })));
+  var pembuka = el('button', { 'class': 'pembuka', type: 'button', 'aria-label': 'Jelajah Pencernaan. Ketuk untuk mulai.' }, [
+    baris,
+    el('h1', { html: '<span>' + huruf('Jelajah', 0.7) + '</span><br><span class="w2">' + huruf('Pencernaan', 1.1) + '</span>' }),
+    el('p', { style: 'font-size:clamp(14px,2.6vw,19px);color:#d5e6ea;animation:naik .6s 1.7s both', text: 'Petualangan sesuap nasi di dalam tubuhmu' }),
+    el('span', { 'class': 'ajak', text: 'Ketuk untuk mulai' })
+  ]);
+  pembuka.addEventListener('click', function () {
+    try { sessionStorage.setItem('jp-pembuka', '1'); } catch (e) { /* abaikan */ }
+    JP.bunyi.menang(); JP.konfeti(70); pembuka.classList.add('hilang');
+    setTimeout(function () { pembuka.remove(); ketik(sapa); }, 650);
+  });
+  document.body.appendChild(pembuka); pembuka.focus();
 })();

@@ -15,6 +15,12 @@ untuk IPAS kelas V SD (Fase C). Dibuat untuk mata kuliah Teknologi Baru dalam Pe
 | `/asesmen/ujian.html` | Asesmen sumatif: 15 soal, nilai 0 sampai 100, pembahasan, sertifikat |
 | `/asesmen/guru.html` | Kisi-kisi, kunci jawaban, pedoman penskoran, rekap hasil |
 
+## Tokoh dan arena bonus
+
+Si Nasi sang penjelajah ditemani enam penjaga pos (Gigo, Kero, Lambu, Hali, Kolo, Tiha) dan Si Kuman.
+Semua tokoh digambar dengan SVG di `assets/tokoh.js`. Arena bonus Basmi Kuman ada di `/asesmen/bonus.html`
+dan tidak dinilai.
+
 ## Susunan file
 
 - `assets/` dipakai bersama: `tema.css` (tampilan), `inti.js` (penyimpan progres, bunyi), `soal.js` (bank soal), `peta.js` (gambar tubuh 2D).

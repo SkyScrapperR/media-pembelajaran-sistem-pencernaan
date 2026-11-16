@@ -13,7 +13,7 @@
   function mulai() { soal = JP.acak(S.DIAG); i = 0; hasil = []; tanya(); }
   function awal() {
     bingkai([el('section', { 'class': 'panel stack', style: 'align-items:center;text-align:center' }, [
-      el('div', { 'class': 'bob' }, JP.nasi(96)),
+      el('div', { 'class': 'bob' }, JP.nasi(110, 'pikir')),
       el('p', { 'class': 'kicker', text: 'Asesmen diagnostik' }),
       el('h1', { text: 'Cek Bekal' }),
       el('p', { 'class': 'lead', text: 'Sebelum menjelajah, Si Nasi ingin tahu bekal pengetahuanmu. Ada 6 pertanyaan. Tidak ada nilai dan tidak ada yang dimarahi, jadi jawab sejujurnya. Setelah menjawab, pilih seberapa yakin kamu.' }),

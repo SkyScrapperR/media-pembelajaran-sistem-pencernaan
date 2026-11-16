@@ -10,10 +10,10 @@
     S.POS.forEach(function (p) { var r = d.pos[p.no]; if (r) { bintang += r.bintang; if (r.bintang > 0) { selesai++; } } });
     var tuntas = d.ujian && d.ujian.nilai >= S.KKTP;
     /* simpul peta: Cek Bekal, 6 pos, Ujian Akhir */
-    var simpul = [{ bul: 'B', jenis: 'Diagnostik · sebelum belajar', judul: 'Cek Bekal', ket: 'Enam pertanyaan pembuka, tanpa nilai. Jawab lalu pilih seberapa yakin kamu.', href: 'cek-bekal.html', done: !!d.diag,
+    var simpul = [{ tk: 'nasi', bul: 'B', jenis: 'Diagnostik · sebelum belajar', judul: 'Cek Bekal', ket: 'Enam pertanyaan pembuka, tanpa nilai. Jawab lalu pilih seberapa yakin kamu.', href: 'cek-bekal.html', done: !!d.diag,
       status: d.diag ? Object.keys(S.KATEGORI).map(function (k) { var n = d.diag.items.filter(function (i) { return i.kat === k; }).length; return n ? el('span', { 'class': 'badge ' + S.KATEGORI[k].warna, text: S.KATEGORI[k].n + ': ' + n }) : null; }) : null }];
-    S.POS.forEach(function (p) { var r = d.pos[p.no]; simpul.push({ bul: String(p.no), jenis: 'Formatif · Pos ' + p.no + ' · ' + p.organ, judul: p.judul, ket: p.bentuk, href: 'pos.html?pos=' + p.no, done: !!(r && r.bintang > 0), status: [JP.bintang(r ? r.bintang : 0)] }); });
-    simpul.push({ bul: '★', jenis: 'Sumatif · setelah belajar', judul: 'Ujian Akhir Penjelajah', ket: 'Lima belas soal, nilai 0 sampai 100. Raih ' + S.KKTP + ' ke atas untuk mendapat sertifikat.', href: 'ujian.html', done: !!d.ujian, bos: true,
+    S.POS.forEach(function (p) { var r = d.pos[p.no]; simpul.push({ tk: JP.TOKOH_POS[p.no - 1], bul: String(p.no), jenis: 'Formatif · Pos ' + p.no + ' · ' + p.organ, judul: p.judul, ket: p.bentuk, href: 'pos.html?pos=' + p.no, done: !!(r && r.bintang > 0), status: [JP.bintang(r ? r.bintang : 0)] }); });
+    simpul.push({ tk: 'nasi', mood: 'bangga', bul: '★', jenis: 'Sumatif · setelah belajar', judul: 'Ujian Akhir Penjelajah', ket: 'Lima belas soal, nilai 0 sampai 100. Raih ' + S.KKTP + ' ke atas untuk mendapat sertifikat.', href: 'ujian.html', done: !!d.ujian, bos: true,
       status: d.ujian ? [el('span', { 'class': 'badge ' + (tuntas ? 'good' : 'sun'), text: 'Nilai terbaik ' + d.ujian.nilai + ' · ' + S.predikat(d.ujian.nilai) })] : null });
     var berikut = -1; simpul.some(function (s, i) { if (!s.done) { berikut = i; return true; } return false; });
     var namaForm = el('form', { 'class': 'row', onsubmit: function (e) { e.preventDefault(); var v = e.target.elements.nama.value.trim(); if (v) { d.nama = v.slice(0, 30); JP.simpan(); JP.bunyi.koin(); JP.toast('Selamat datang, ' + d.nama + '!'); gambar(); } } }, [
@@ -47,11 +47,16 @@
         el('h2', { text: 'Peta petualangan' }),
         el('ol', { 'class': 'trail' }, simpul.map(function (s, i) {
           return el('li', {}, el('a', { 'class': 'node' + (s.done ? ' done' : '') + (i === berikut ? ' next' : '') + (s.bos ? ' bos' : ''), href: s.href }, [
-            el('span', { 'class': 'bul', 'aria-hidden': 'true', text: s.done && !s.bos ? '✓' : s.bul }),
+            el('span', { 'class': 'tk', 'aria-hidden': 'true' }, [JP.tokoh(s.tk, 56, s.mood || (s.done ? 'tawa' : 'senang')), s.done ? el('span', { 'class': 'cek', text: '✓' }) : null]),
             el('span', { 'class': 'stack', style: 'gap:3px;min-width:0' }, [el('span', { 'class': 'kicker', style: 'font-size:11px', text: s.jenis }), el('h3', { text: s.judul }), el('span', { 'class': 'small muted', text: s.ket }), s.status ? el('span', { 'class': 'row', style: 'gap:6px' }, s.status) : null]),
             el('span', { 'class': 'go', text: (s.done ? 'Main lagi' : i === berikut ? 'Mulai' : 'Buka') + ' →' })
           ]));
         }))
+      ]),
+      el('a', { 'class': 'pintu c', href: 'bonus.html', style: 'min-height:0' }, [
+        el('span', { 'class': 'tag', text: 'Arena bonus · tidak dinilai' }), el('h2', { style: 'font-size:28px', text: 'Basmi Kuman' }),
+        el('p', { text: d.bonus ? 'Rekormu ' + d.bonus + ' poin. Bisa lebih tinggi?' : 'Jadilah asam lambung dan basmi kuman yang menyerbu!' }),
+        el('span', { 'class': 'maju', text: 'Main sekarang →' }), JP.tokoh('kuman', 78, 'marah')
       ]),
       el('section', { 'class': 'panel stack' }, [
         el('h2', { text: 'Rak lencana' }),

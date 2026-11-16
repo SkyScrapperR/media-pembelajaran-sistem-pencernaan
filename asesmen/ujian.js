@@ -7,7 +7,7 @@
   function bingkai(isi, lebar) { app.textContent = ''; app.appendChild(el('div', { 'class': 'wrap', style: lebar ? 'width:min(920px,100%)' : '' }, [JP.kepala('asesmen')].concat(isi))); window.scrollTo(0, 0); }
   function awal() {
     bingkai([el('section', { 'class': 'panel stack', style: 'align-items:center;text-align:center' }, [
-      el('div', { 'class': 'bob' }, JP.nasi(96)),
+      el('div', { 'class': 'bob' }, JP.nasi(120, 'tawa')),
       el('p', { 'class': 'kicker', text: 'Asesmen sumatif' }),
       el('h1', { text: 'Ujian Akhir Penjelajah' }),
       el('p', { 'class': 'lead', text: 'Temani Si Nasi menempuh seluruh saluran pencernaan. Setiap soal yang kamu jawab membuatnya maju satu langkah. Ada 15 soal dengan nilai tertinggi 100. Pembahasan muncul setelah semua soal selesai.' }),
@@ -136,7 +136,7 @@
     var tgl = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     bingkai([
       el('section', { 'class': 'panel stack pop', style: 'align-items:center;text-align:center' }, [
-        JP.nasi(84, tuntas ? 'senang' : 'sedih'),
+        el('div', { 'class': 'bob' }, JP.nasi(110, tuntas ? 'bangga' : 'sedih')),
         el('p', { 'class': 'kicker', text: 'Nilai Ujian Akhir' }),
         angka,
         JP.bintangMuncul(b),

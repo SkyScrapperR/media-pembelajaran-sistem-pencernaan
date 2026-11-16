@@ -5,12 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Belajar · Jelajah Pencernaan</title>
 <meta name="description" content="Model 3D sistem pencernaan manusia interaktif untuk IPAS kelas 5 SD.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff6a4d'/%3E%3Cpath d='M32 12c13 0 19 13 19 25 0 13-9 21-19 21s-19-8-19-21c0-12 6-25 19-25z' fill='%23fffdf7' stroke='%2312262d' stroke-width='3'/%3E%3Ccircle cx='25' cy='36' r='3' fill='%2312262d'/%3E%3Ccircle cx='39' cy='36' r='3' fill='%2312262d'/%3E%3Cpath d='M26 44q6 6 12 0' fill='none' stroke='%2312262d' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <meta name="theme-color" content="#1f333b">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Lexend:wght@400;600&display=swap">
 <link rel="stylesheet" href="gaya.css">
 </head>
 <body>
+<div id="muat" role="status"><div class="muatNasi"><svg viewBox="0 0 100 116" width="110" height="128" aria-hidden="true"><path d="M20 74Q8 72 6 60M80 72q12-6 13-18M40 106l-3 8M60 106l3 8" fill="none" stroke="#12262d" stroke-width="3.4" stroke-linecap="round"/><path d="M50 20c22 0 33 22 33 46 0 26-15 42-33 42S17 92 17 66c0-24 11-46 33-46z" fill="#fffdf7" stroke="#12262d" stroke-width="3.4"/><path d="M26 30c2-16 14-24 24-24s22 8 24 24z" fill="#d9a441" stroke="#12262d" stroke-width="3.4" stroke-linejoin="round"/><path d="M18 31c10-5 54-5 64 0 2 4-2 6-6 6H24c-4 0-8-2-6-6z" fill="#e8b85a" stroke="#12262d" stroke-width="3.4" stroke-linejoin="round"/><path d="M29 25h42" stroke="#ff6a4d" stroke-width="5"/><ellipse cx="40" cy="66" rx="4.2" ry="5.4" fill="#12262d"/><ellipse cx="60" cy="66" rx="4.2" ry="5.4" fill="#12262d"/><ellipse cx="31" cy="75" rx="5.5" ry="3.2" fill="#ff6a4d" opacity=".45"/><ellipse cx="69" cy="75" rx="5.5" ry="3.2" fill="#ff6a4d" opacity=".45"/><path d="M42 78q8 9 16 0" fill="none" stroke="#12262d" stroke-width="3" stroke-linecap="round"/></svg></div><p class="muatJudul">Jelajah Pencernaan</p><p>Si Nasi sedang menyiapkan tubuh 3D…</p><div class="muatBar"><i></i></div></div>
 <div id="app">
   <div class="bg" aria-hidden="true"><div class="lines"></div><div class="spot"></div><div class="vig"></div></div>
   <canvas id="gl" tabindex="0" aria-label="Model 3D sistem pencernaan. Geser untuk memutar, cubit atau gulir untuk memperbesar, panah keyboard untuk memutar."></canvas>
@@ -212,5 +214,15 @@
 <script src="data.js"></script>
 <script src="tubuh.js"></script>
 <script src="app.js"></script>
+<script>
+/* layar muat hilang saat model 3D siap (tombol kegiatan aktif), atau setelah 25 detik */
+(function () {
+  var m = document.getElementById('muat'), b = document.querySelector('[data-m="journey"]');
+  function tutup() { if (!m) { return; } m.classList.add('hilang'); setTimeout(function () { if (m) { m.remove(); m = null; } }, 600); }
+  if (!b || !b.disabled) { tutup(); return; }
+  new MutationObserver(function () { if (!b.disabled) { tutup(); } }).observe(b, { attributes: true });
+  setTimeout(tutup, 25000);
+})();
+</script>
 </body>
 </html>
