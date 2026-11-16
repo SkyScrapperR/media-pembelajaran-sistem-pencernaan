@@ -28,6 +28,39 @@
       el('span', { 'class': 'tag', text: tag }), el('h2', { text: judul }), el('p', { text: teks }), el('span', { 'class': 'maju', text: ajak + ' →' }), tk
     ]);
   }
+  /* alat tambahan: kamus, simpan untuk dipakai tanpa internet, dan pasang sebagai aplikasi */
+  var tOffline = el('button', { 'class': 'btn', type: 'button', text: 'Simpan untuk tanpa internet', onclick: simpanOffline });
+  var tPasang = el('button', { 'class': 'btn', type: 'button', hidden: true, text: 'Pasang sebagai aplikasi' });
+  var alat = el('div', { 'class': 'alat' }, [el('a', { 'class': 'btn', href: 'kamus/', text: 'Kamus Pencernaan' }), tOffline, tPasang]);
+  if (!('caches' in window) || !('serviceWorker' in navigator)) { tOffline.hidden = true; }
+  try { if (localStorage.getItem('jp-offline') === '1') { tOffline.textContent = 'Tersimpan untuk tanpa internet ✓'; } } catch (e) { /* abaikan */ }
+  var ajakan = null;
+  addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); ajakan = e; tPasang.hidden = false; });
+  addEventListener('appinstalled', function () { tPasang.hidden = true; JP.toast('Terpasang! Cari ikon Si Nasi di layar utamamu.', 3600); });
+  tPasang.addEventListener('click', function () { if (ajakan) { ajakan.prompt(); ajakan = null; tPasang.hidden = true; } });
+  function simpanOffline() {
+    if (tOffline.disabled) { return; }
+    tOffline.disabled = true; JP.bunyi.ketuk();
+    var daftar = ['./', 'belajar/', 'asesmen/', 'kamus/', 'asesmen/cek-bekal.html', 'asesmen/pos.html', 'asesmen/ujian.html', 'asesmen/bonus.html', 'asesmen/guru.html', 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'];
+    function ambil(u) { return fetch(u).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
+    Promise.all([ambil('audio/manifest.json'), ambil('audio/asesmen/manifest.json')]).then(function (m) {
+      if (m[0] && m[0].files) { Object.keys(m[0].files).forEach(function (k) { daftar.push('audio/' + m[0].files[k]); }); }
+      if (m[1] && m[1].files) { Object.keys(m[1].files).forEach(function (k) { daftar.push('audio/asesmen/' + m[1].files[k]); }); }
+      var selesai = 0, gagal = 0;
+      /* cukup diminta: pekerja layanan yang menyimpan setiap berkas yang lewat */
+      var antre = daftar.slice();
+      function kerja() {
+        var u = antre.shift(); if (!u) { return Promise.resolve(); }
+        return fetch(u, /^https:/.test(u) ? { mode: 'cors' } : {}).then(function (r) { if (!r.ok) { gagal++; } }).catch(function () { gagal++; }).then(function () { selesai++; tOffline.textContent = 'Menyimpan… ' + Math.round(selesai / daftar.length * 100) + '%'; return kerja(); });
+      }
+      return Promise.all([kerja(), kerja(), kerja(), kerja()]).then(function () {
+        tOffline.disabled = false;
+        if (gagal > daftar.length / 3) { tOffline.textContent = 'Simpan untuk tanpa internet'; JP.toast('Belum berhasil menyimpan. Periksa internetmu, lalu coba lagi.', 3600); return; }
+        try { localStorage.setItem('jp-offline', '1'); } catch (e) { /* abaikan */ }
+        tOffline.textContent = 'Tersimpan untuk tanpa internet ✓'; JP.bunyi.lencana(); JP.toast('Siap dipakai tanpa internet di perangkat ini!', 3600);
+      });
+    });
+  }
   document.getElementById('app').appendChild(el('main', { 'class': 'menu' }, [
     el('div', { 'class': 'atas' }, [
       el('span', { 'class': 'badge', text: 'IPAS Kelas 5 SD · Fase C' }),
@@ -43,6 +76,7 @@
       pintu('b', 'asesmen/', 'Peta petualangan', 'Asesmen', d.nama ? bintang + ' dari 18 bintang' + (d.ujian ? ', nilai ujian ' + d.ujian.nilai : '') + '. Lanjutkan!' : 'Cek Bekal, enam Pos Pemeriksaan, dan Ujian Akhir.', d.nama ? 'Lanjut bermain' : 'Mulai bermain', JP.tokoh('gigo', 84, 'tawa')),
       pintu('c', 'asesmen/bonus.html', 'Arena bonus', 'Basmi Kuman', d.bonus ? 'Rekormu ' + d.bonus + ' poin. Bisa lebih tinggi?' : 'Jadilah asam lambung dan basmi kuman yang menyerbu!', 'Main sekarang', JP.tokoh('kuman', 84, 'marah'))
     ]),
+    alat,
     el('section', { 'class': 'stack', style: 'gap:8px;align-items:center;width:100%' }, [
       el('h2', { style: 'font-size:clamp(20px,3.6vw,26px)', text: 'Kenalan dengan para penjaga pos' }),
       el('div', { 'class': 'parade' }, JP.TOKOH_POS.concat(['kuman']).map(function (id) { return JP.kartuTokoh(id, 66); })),
@@ -65,6 +99,7 @@
       { sel: '.pintu.a', judul: 'Pintu Belajar', teks: 'Mulai dari sini. Kamu bisa memutar tubuh 3D, mengenal 9 organ, dan mengikuti Perjalanan Nasi.' },
       { sel: '.pintu.b', judul: 'Pintu Asesmen', teks: 'Di sini ada peta petualangan: Cek Bekal, enam Pos Pemeriksaan, dan Ujian Akhir.' },
       { sel: '.pintu.c', judul: 'Arena bonus', teks: 'Mau bersantai? Mainkan Basmi Kuman. Permainan ini tidak dinilai.' },
+      { sel: '.alat', judul: 'Kamus dan mode tanpa internet', teks: 'Buka Kamus untuk mencari arti istilah. Tombol Simpan membuat semuanya bisa dipakai walau internet putus.' },
       { sel: '.parade', judul: 'Para penjaga pos', teks: 'Ketuk tokohnya untuk berkenalan. Mereka menunggumu di setiap pos.' },
       { sel: '.rute', judul: 'Urutan yang disarankan', teks: 'Cek Bekal dulu, lalu Belajar, lanjut Pos Pemeriksaan, dan terakhir Ujian Akhir.' },
       { sel: '.tsuara', judul: 'Suara dan musik', teks: 'Ganti lagu, atur volume, atau matikan suara lewat tombol ini.', bulat: true },

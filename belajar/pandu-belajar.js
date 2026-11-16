@@ -12,9 +12,10 @@
       { sel: '.hlinks.site', judul: 'Pindah halaman', teks: 'Kembali ke Beranda atau lanjut ke Asesmen untuk bermain.' }
     ],
     intro: [
-      { sel: '#clue', judul: 'Petunjuk', teks: 'Perhatikan organ yang menyala, lalu baca petunjuknya.' },
+      { judul: 'Organ apa ini?', teks: 'Perhatikan organ yang menyala pada tubuh 3D, lalu tebak namanya.' },
       { sel: '#opts', judul: 'Tebak organnya', teks: 'Pilih nama organ yang menurutmu benar. Salah tidak apa-apa, ini baru pemanasan.' },
-      { sel: '#score', judul: 'Skor tebakan', teks: 'Jumlah tebakanmu yang benar muncul di sini.' }
+      { sel: '#clueBtn', judul: 'Butuh petunjuk?', teks: 'Ketuk tombol ini untuk membaca petunjuk tentang organ itu.', bulat: true },
+      { sel: '#introTop', judul: 'Skor tebakan', teks: 'Jumlah tebakanmu yang benar muncul di sini.' }
     ],
     explore: [
       { judul: 'Putar dan perbesar', teks: 'Geser layar untuk memutar tubuh. Cubit layar atau gulir roda tetikus untuk memperbesar.' },

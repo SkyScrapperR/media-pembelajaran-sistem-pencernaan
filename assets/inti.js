@@ -142,7 +142,7 @@
     var link = function (h, t, id) { return el('a', { href: dasar + h, text: t, 'aria-current': aktif === id ? 'page' : null }); };
     return el('header', { 'class': 'bar noprint' }, [
       el('a', { 'class': 'brand', href: dasar }, [el('span', { 'class': 'logo', html: IKON.logo }), 'Jelajah Pencernaan']),
-      el('nav', { 'class': 'nav', 'aria-label': 'Navigasi situs' }, [link('', 'Beranda', 'beranda'), link('belajar/', 'Belajar', 'belajar'), link('asesmen/', 'Asesmen', 'asesmen')].concat(JP.tombolSuara ? JP.tombolSuara() : []).concat(window.JP_pandu ? [JP_pandu.tombol(function () { (JP.bantu || bantuUmum)(); })] : []))
+      el('nav', { 'class': 'nav', 'aria-label': 'Navigasi situs' }, [link('', 'Beranda', 'beranda'), link('belajar/', 'Belajar', 'belajar'), link('asesmen/', 'Asesmen', 'asesmen'), link('kamus/', 'Kamus', 'kamus')].concat(JP.tombolSuara ? JP.tombolSuara() : []).concat(window.JP_pandu ? [JP_pandu.tombol(function () { (JP.bantu || bantuUmum)(); })] : []))
     ]);
   }
   var embed = /[?&]embed=1/.test(location.search);
@@ -169,7 +169,10 @@
     if (!data.tingkat) { data.tingkat = p.tingkat; simpan(); }
     return false;
   }
-  window.JP = { toast: toast, cekNaik: cekNaik, data: data, simpan: simpan, catat: catat, el: el, acak: acak, bunyi: bunyi, bintang: bintang, bintangMuncul: bintangMuncul, konfeti: konfeti, medali: medali, pangkat: pangkat, LENCANA: LENCANA, nasi: nasi, kepala: kepala, IKON: IKON,
+  /* pekerja layanan: situs tetap bisa dibuka saat internet putus */
+  var dasarSitus = (document.currentScript && document.currentScript.src || '').replace(/assets\/inti\.js.*$/, '');
+  if (!embed && 'serviceWorker' in navigator && dasarSitus) { try { navigator.serviceWorker.register(dasarSitus + 'sw.js'); } catch (e) { /* abaikan */ } }
+  window.JP = { dasar: dasarSitus, toast: toast, cekNaik: cekNaik, data: data, simpan: simpan, catat: catat, el: el, acak: acak, bunyi: bunyi, bintang: bintang, bintangMuncul: bintangMuncul, konfeti: konfeti, medali: medali, pangkat: pangkat, LENCANA: LENCANA, nasi: nasi, kepala: kepala, IKON: IKON,
     embed: embed,
     /* pemain baru: progres dikosongkan, riwayat untuk rekap guru tetap ada */
     gantiPemain: function () { data.nama = ''; data.diag = null; data.pos = {}; data.ujian = null; data.tingkat = 0; data.bonus = 0; simpan(); },

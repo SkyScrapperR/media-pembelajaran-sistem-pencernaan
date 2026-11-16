@@ -14,6 +14,8 @@ untuk IPAS kelas V SD (Fase C). Dibuat untuk mata kuliah Teknologi Baru dalam Pe
 | `/asesmen/pos.html?pos=1..6` | Asesmen formatif: 6 permainan dengan umpan balik langsung |
 | `/asesmen/ujian.html` | Asesmen sumatif: 15 soal, nilai 0 sampai 100, pembahasan, sertifikat |
 | `/asesmen/guru.html` | Kisi-kisi, kunci jawaban, pedoman penskoran, rekap hasil |
+| `/asesmen/bonus.html` | Arena bonus Basmi Kuman (tidak dinilai) |
+| `/kamus/` | Kamus Pencernaan: 33 istilah, bisa dicari dan didengarkan |
 
 ## Tokoh dan arena bonus
 
@@ -26,6 +28,12 @@ dan tidak dinilai.
 `assets/pandu.js` menampilkan panduan langkah demi langkah untuk pengguna baru: layar meredup, satu bagian disorot,
 dan Si Nasi menjelaskan fungsinya. Panduan muncul otomatis sekali di beranda, peta asesmen, awal pos, tiap jenis
 permainan, Cek Bekal, Ujian, dan tiap kegiatan media 3D. Tombol tanda tanya mengulang panduan kapan saja.
+
+## Dipakai tanpa internet dan dipasang sebagai aplikasi
+
+`sw.js` menyimpan setiap berkas yang pernah dibuka, sehingga situs tetap berjalan saat internet putus.
+Tombol "Simpan untuk tanpa internet" di beranda mengunduh semua halaman, mesin 3D, dan rekaman suara sekaligus.
+Dengan `manifest.webmanifest`, situs dapat dipasang ke layar utama HP atau laptop seperti aplikasi.
 
 ## Susunan file
 

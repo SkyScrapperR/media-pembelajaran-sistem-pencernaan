@@ -7,6 +7,8 @@ const out = {};
 S.DIAG.forEach(q => { out['diag-' + q.id] = S.teksBaca(q); });
 S.POS.forEach(p => { out['pos-' + p.no] = S.teksPos(p); });
 S.UJIAN.forEach(q => { out['ujian-' + q.id] = S.teksBaca(q); });
+require('../assets/kamus-data.js');
+window.JP_KAMUS.forEach(k => { out['kamus-' + k.id] = k.istilah + '. ' + k.arti; });
 Object.keys(S.NASI).forEach(k => S.NASI[k].forEach((t, i) => {
   out['nasi-' + k + '-' + (i + 1)] = { teks: t, voice: 'id-ID-GadisNeural', pitch: '+28Hz', rate: '+6%' };
 }));
